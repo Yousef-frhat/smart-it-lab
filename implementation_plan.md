@@ -3,7 +3,7 @@
 ## Current State Analysis
 
 ### Backend (SmartBackend)
-The backend is **minimal and incomplete**. It only has:
+The backend is **minimal and incomplete**. It only has
 
 | Endpoint | Method | Description | Status |
 |---|---|---|---|
