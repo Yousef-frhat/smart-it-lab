@@ -1,0 +1,22 @@
+# docker-compose.override.yml
+# هذا الملف يُطبّق تلقائياً في بيئة التطوير فقط
+# لا تستخدمه في Production
+
+version: '3.8'
+
+services:
+  mongodb:
+    ports:
+      - "27017:27017"  # مكشوف للـ dev tools مثل MongoDB Compass
+
+  backend:
+    ports:
+      - "5000:5000"   # مكشوف مباشرة للـ development
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./SmartBackend/src:/app/src  # Hot reload في التطوير
+
+  frontend:
+    ports:
+      - "3000:80"
