@@ -44,7 +44,7 @@ export default function ResetPassword() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-4">
           <p className="text-[#EF4444] font-semibold">
             Missing reset token. Please use the link from your email.
@@ -61,21 +61,21 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-6">
         {/* Logo */}
         <div className="text-center flex items-center justify-center gap-2">
-          <Network className="w-7 h-7 text-[#00FF41]" />
+          <Network className="w-7 h-7 text-accent" />
           <span className="font-mono text-xl">Smart IT Lab</span>
         </div>
 
-        <div className="bg-[#1E293B] border border-[#334155] rounded-lg p-8">
+        <div className="bg-card border border-border rounded-lg p-8">
           <div className="text-center mb-6">
             <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-[#3B82F6]/10 flex items-center justify-center">
-              <Lock className="w-7 h-7 text-[#3B82F6]" />
+              <Lock className="w-7 h-7 text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-white">Reset Password</h1>
-            <p className="text-sm text-[#94A3B8] mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Enter your new password below.
             </p>
           </div>
@@ -89,7 +89,7 @@ export default function ResetPassword() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimum 8 characters"
-                className="bg-[#0F172A] border-[#334155]"
+                className="bg-background border-border"
                 required
                 minLength={8}
               />
@@ -102,7 +102,7 @@ export default function ResetPassword() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter your password"
-                className="bg-[#0F172A] border-[#334155]"
+                className="bg-background border-border"
                 required
                 minLength={8}
               />

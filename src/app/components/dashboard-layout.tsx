@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import {
   Network, BarChart3, BookOpen, Trophy, Award,
-  Settings, LogOut, Languages, Sun, Moon, Monitor,
+  Settings, LogOut, Languages, Sun, Moon,
 } from "lucide-react";
 import { useAuth } from "@/app/contexts/auth-context";
 import { useTheme } from "@/app/contexts/theme-context";
@@ -15,14 +15,13 @@ interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-// ── Theme cycle config ───────────────────────────────────────────
+// ── Theme toggle config (dark ↔ light only) ──────────────────────
 const THEME_META: Record<
   Theme,
   { icon: typeof Sun; nextLabel: string; nextTheme: Theme }
 > = {
-  dark:  { icon: Sun,     nextLabel: 'Light Mode', nextTheme: 'light' },
-  light: { icon: Monitor, nextLabel: 'System Mode', nextTheme: 'auto'  },
-  auto:  { icon: Moon,    nextLabel: 'Dark Mode',  nextTheme: 'dark'  },
+  dark:  { icon: Sun,  nextLabel: 'Light Mode', nextTheme: 'light' },
+  light: { icon: Moon, nextLabel: 'Dark Mode',  nextTheme: 'dark'  },
 };
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {

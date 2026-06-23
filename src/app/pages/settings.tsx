@@ -6,7 +6,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import {
-  User, Mail, Shield, Bell, Moon, Sun, Globe,
+  User, Mail, Shield, Bell, Moon, Sun,
   Save, Key, Trash2, Camera, Loader2, Monitor,
 } from "lucide-react";
 import { useAuth } from "@/app/contexts/auth-context";
@@ -192,7 +192,7 @@ export default function Settings() {
   if (isLoadingSettings) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 text-[#3B82F6] animate-spin" />
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
       </div>
     );
   }
@@ -202,14 +202,14 @@ export default function Settings() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold mb-2">Settings</h1>
-        <p className="text-[#94A3B8]">Manage your account preferences and privacy settings</p>
+        <p className="text-muted-foreground">Manage your account preferences and privacy settings</p>
       </div>
 
       {/* Settings Tabs */}
-      <Card className="bg-[#1E293B] border-[#334155]">
+      <Card className="bg-card border-border">
         <CardContent className="pt-6">
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-[#0F172A] mb-6">
+            <TabsList className="grid w-full grid-cols-4 bg-background mb-6">
               <TabsTrigger value="profile">{t('profile')}</TabsTrigger>
               <TabsTrigger value="notifications">{t('notifications')}</TabsTrigger>
               <TabsTrigger value="appearance">{t('appearance')}</TabsTrigger>
@@ -218,7 +218,7 @@ export default function Settings() {
 
             {/* Profile Tab */}
             <TabsContent value="profile" className="space-y-6">
-              <div className="flex items-center gap-6 pb-6 border-b border-[#334155]">
+              <div className="flex items-center gap-6 pb-6 border-b border-border">
                 <div
                   className="relative cursor-pointer group"
                   onClick={() => fileInputRef.current?.click()}
@@ -280,7 +280,7 @@ export default function Settings() {
                       <><Camera className="w-4 h-4 mr-2" /> Upload Photo</>
                     )}
                   </Button>
-                  <p className="text-sm text-[#94A3B8] mt-2">JPG, PNG or WebP. Max size 2MB.</p>
+                  <p className="text-sm text-muted-foreground mt-2">JPG, PNG or WebP. Max size 2MB.</p>
                 </div>
               </div>
 
@@ -292,7 +292,7 @@ export default function Settings() {
                       id="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="bg-[#0F172A] border-[#334155]"
+                      className="bg-background border-border"
                       placeholder="Enter your full name"
                     />
                   </div>
@@ -304,7 +304,7 @@ export default function Settings() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="bg-[#0F172A] border-[#334155] font-mono"
+                      className="bg-background border-border font-mono"
                       placeholder="your.email@university.edu"
                       disabled
                     />
@@ -317,20 +317,20 @@ export default function Settings() {
                     id="bio"
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    className="w-full min-h-[100px] px-3 py-2 bg-[#0F172A] border border-[#334155] rounded-md text-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
+                    className="w-full min-h-[100px] px-3 py-2 bg-background border border-border rounded-md text-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
                     placeholder="Tell us about yourself..."
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Account Type</Label>
-                  <div className="flex items-center gap-2 p-3 bg-[#0F172A] border border-[#334155] rounded-md">
-                    <Shield className="w-4 h-4 text-[#3B82F6]" />
+                  <div className="flex items-center gap-2 p-3 bg-background border border-border rounded-md">
+                    <Shield className="w-4 h-4 text-primary" />
                     <span className="text-sm">{user?.role === 'admin' ? 'Administrator' : 'Student Account'}</span>
                     {user?.plan && (
                       <>
-                        <span className="text-[#94A3B8]">•</span>
-                        <span className="text-sm text-[#00FF41] uppercase font-semibold">{user.plan} Plan</span>
+                        <span className="text-muted-foreground">•</span>
+                        <span className="text-sm text-accent uppercase font-semibold">{user.plan} Plan</span>
                       </>
                     )}
                   </div>
@@ -349,7 +349,7 @@ export default function Settings() {
               </div>
 
               {/* Password Change Section */}
-              <div className="pt-6 border-t border-[#334155]">
+              <div className="pt-6 border-t border-border">
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <Key className="w-5 h-5 text-[#F59E0B]" />
                   Change Password
@@ -362,7 +362,7 @@ export default function Settings() {
                       type="password"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
-                      className="bg-[#0F172A] border-[#334155]"
+                      className="bg-background border-border"
                       placeholder="Enter current password"
                     />
                   </div>
@@ -373,7 +373,7 @@ export default function Settings() {
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="bg-[#0F172A] border-[#334155]"
+                      className="bg-background border-border"
                       placeholder="Enter new password"
                     />
                   </div>
@@ -384,7 +384,7 @@ export default function Settings() {
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="bg-[#0F172A] border-[#334155]"
+                      className="bg-background border-border"
                       placeholder="Confirm new password"
                     />
                   </div>
@@ -403,12 +403,12 @@ export default function Settings() {
             {/* Notifications Tab */}
             <TabsContent value="notifications" className="space-y-6">
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-[#0F172A] border border-[#334155] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
                   <div className="flex items-start gap-3">
-                    <Bell className="w-5 h-5 text-[#3B82F6] mt-0.5" />
+                    <Bell className="w-5 h-5 text-primary mt-0.5" />
                     <div>
                       <h4 className="font-semibold mb-1">Email Notifications</h4>
-                      <p className="text-sm text-[#94A3B8]">Receive notifications via email</p>
+                      <p className="text-sm text-muted-foreground">Receive notifications via email</p>
                     </div>
                   </div>
                   <Switch 
@@ -417,12 +417,12 @@ export default function Settings() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-[#0F172A] border border-[#334155] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
                   <div className="flex items-start gap-3">
                     <Bell className="w-5 h-5 text-[#F59E0B] mt-0.5" />
                     <div>
                       <h4 className="font-semibold mb-1">Lab Reminders</h4>
-                      <p className="text-sm text-[#94A3B8]">Get reminded about incomplete labs</p>
+                      <p className="text-sm text-muted-foreground">Get reminded about incomplete labs</p>
                     </div>
                   </div>
                   <Switch 
@@ -431,12 +431,12 @@ export default function Settings() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-[#0F172A] border border-[#334155] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
                   <div className="flex items-start gap-3">
-                    <Bell className="w-5 h-5 text-[#00FF41] mt-0.5" />
+                    <Bell className="w-5 h-5 text-accent mt-0.5" />
                     <div>
                       <h4 className="font-semibold mb-1">Achievement Alerts</h4>
-                      <p className="text-sm text-[#94A3B8]">Notifications when you unlock achievements</p>
+                      <p className="text-sm text-muted-foreground">Notifications when you unlock achievements</p>
                     </div>
                   </div>
                   <Switch 
@@ -445,12 +445,12 @@ export default function Settings() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-[#0F172A] border border-[#334155] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
                   <div className="flex items-start gap-3">
                     <Mail className="w-5 h-5 text-[#8B5CF6] mt-0.5" />
                     <div>
                       <h4 className="font-semibold mb-1">Weekly Progress Report</h4>
-                      <p className="text-sm text-[#94A3B8]">Receive a summary of your weekly progress</p>
+                      <p className="text-sm text-muted-foreground">Receive a summary of your weekly progress</p>
                     </div>
                   </div>
                   <Switch 
@@ -478,10 +478,10 @@ export default function Settings() {
                 <div className="space-y-2">
                   <Label>{t('theme')}</Label>
                   <Select value={theme} onValueChange={(val) => setTheme(val as Theme)}>
-                    <SelectTrigger className="bg-[#0F172A] border-[#334155]">
+                    <SelectTrigger className="bg-background border-border">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-[#334155]">
+                    <SelectContent className="bg-card border-border">
                       <SelectItem value="dark">
                         <div className="flex items-center gap-2">
                           <Moon className="w-4 h-4" />
@@ -494,24 +494,18 @@ export default function Settings() {
                           Light Mode
                         </div>
                       </SelectItem>
-                      <SelectItem value="auto">
-                        <div className="flex items-center gap-2">
-                          <Globe className="w-4 h-4" />
-                          System Default
-                        </div>
-                      </SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-sm text-[#94A3B8]">{t('chooseColorScheme')}</p>
+                  <p className="text-sm text-muted-foreground">{t('chooseColorScheme')}</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label>{t('language')}</Label>
                   <Select value={currentLanguage} onValueChange={(val) => setLanguage(val as Language)}>
-                    <SelectTrigger className="bg-[#0F172A] border-[#334155]">
+                    <SelectTrigger className="bg-background border-border">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1E293B] border-[#334155]">
+                    <SelectContent className="bg-card border-border">
                       <SelectItem value="en">English</SelectItem>
                       <SelectItem value="ar">العربية (Arabic)</SelectItem>
                       <SelectItem value="es">Español</SelectItem>
@@ -520,7 +514,7 @@ export default function Settings() {
                       <SelectItem value="zh">中文 (Chinese)</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-sm text-[#94A3B8]">{t('selectLanguage')}</p>
+                  <p className="text-sm text-muted-foreground">{t('selectLanguage')}</p>
                 </div>
               </div>
 
@@ -539,12 +533,12 @@ export default function Settings() {
             {/* Privacy Tab */}
             <TabsContent value="privacy" className="space-y-6">
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-[#0F172A] border border-[#334155] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
                   <div className="flex items-start gap-3">
-                    <User className="w-5 h-5 text-[#3B82F6] mt-0.5" />
+                    <User className="w-5 h-5 text-primary mt-0.5" />
                     <div>
                       <h4 className="font-semibold mb-1">Public Profile</h4>
-                      <p className="text-sm text-[#94A3B8]">Make your profile visible to other users</p>
+                      <p className="text-sm text-muted-foreground">Make your profile visible to other users</p>
                     </div>
                   </div>
                   <Switch 
@@ -553,12 +547,12 @@ export default function Settings() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-[#0F172A] border border-[#334155] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
                   <div className="flex items-start gap-3">
-                    <User className="w-5 h-5 text-[#00FF41] mt-0.5" />
+                    <User className="w-5 h-5 text-accent mt-0.5" />
                     <div>
                       <h4 className="font-semibold mb-1">Show Progress</h4>
-                      <p className="text-sm text-[#94A3B8]">Display your lab progress to others</p>
+                      <p className="text-sm text-muted-foreground">Display your lab progress to others</p>
                     </div>
                   </div>
                   <Switch 
@@ -567,12 +561,12 @@ export default function Settings() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-[#0F172A] border border-[#334155] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
                   <div className="flex items-start gap-3">
                     <User className="w-5 h-5 text-[#F59E0B] mt-0.5" />
                     <div>
                       <h4 className="font-semibold mb-1">Appear on Leaderboard</h4>
-                      <p className="text-sm text-[#94A3B8]">Show your ranking on the leaderboard</p>
+                      <p className="text-sm text-muted-foreground">Show your ranking on the leaderboard</p>
                     </div>
                   </div>
                   <Switch 
@@ -598,18 +592,18 @@ export default function Settings() {
       </Card>
 
       {/* Danger Zone */}
-      <Card className="bg-[#1E293B] border-[#EF4444]">
+      <Card className="bg-card border-[#EF4444]">
         <CardHeader>
           <CardTitle className="text-[#EF4444]">{t('dangerZone')}</CardTitle>
-          <CardDescription className="text-[#94A3B8]">
+          <CardDescription className="text-muted-foreground">
             {t('dangerZoneDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-[#0F172A] border border-[#334155] rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
             <div>
               <h4 className="font-semibold mb-1">Delete Account</h4>
-              <p className="text-sm text-[#94A3B8]">Permanently delete your account and all data</p>
+              <p className="text-sm text-muted-foreground">Permanently delete your account and all data</p>
             </div>
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -618,10 +612,10 @@ export default function Settings() {
                   {t('deleteAccount')}
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="bg-[#1E293B] border-[#334155]">
+              <AlertDialogContent className="bg-card border-border">
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription className="text-[#94A3B8]">
+                  <AlertDialogDescription className="text-muted-foreground">
                     This action cannot be undone. This will permanently delete your account
                     and remove all your data from our servers including:
                     <ul className="list-disc list-inside mt-2 space-y-1">
@@ -633,7 +627,7 @@ export default function Settings() {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel className="bg-[#0F172A] border-[#334155] hover:bg-[#334155]">
+                  <AlertDialogCancel className="bg-background border-border hover:bg-muted">
                     Cancel
                   </AlertDialogCancel>
                   <AlertDialogAction 

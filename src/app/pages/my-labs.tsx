@@ -62,17 +62,17 @@ export default function MyLabs() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="w-5 h-5 text-[#00FF41]" />;
-      case 'running': return <CircleDot className="w-5 h-5 text-[#3B82F6] animate-pulse" />;
+      case 'completed': return <CheckCircle className="w-5 h-5 text-accent" />;
+      case 'running': return <CircleDot className="w-5 h-5 text-primary animate-pulse" />;
       case 'stopped': return <Clock className="w-5 h-5 text-[#F59E0B]" />;
-      default: return <Circle className="w-5 h-5 text-[#475569]" />;
+      default: return <Circle className="w-5 h-5 text-muted-foreground" />;
     }
   };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 text-[#3B82F6] animate-spin" />
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
       </div>
     );
   }
@@ -82,52 +82,52 @@ export default function MyLabs() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold mb-2">{t('labsTitle')}</h1>
-        <p className="text-[#94A3B8]">{t('labsSubtitle')}</p>
+        <p className="text-muted-foreground">{t('labsSubtitle')}</p>
       </div>
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[#94A3B8] mb-1">{t('totalLabs')}</p>
+                <p className="text-sm text-muted-foreground mb-1">{t('totalLabs')}</p>
                 <p className="text-2xl font-bold font-mono">{labs.length}</p>
               </div>
-              <BookOpen className="w-8 h-8 text-[#3B82F6]" />
+              <BookOpen className="w-8 h-8 text-primary" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[#94A3B8] mb-1">{t('completed')}</p>
-                <p className="text-2xl font-bold font-mono text-[#00FF41]">{completedCount}</p>
+                <p className="text-sm text-muted-foreground mb-1">{t('completed')}</p>
+                <p className="text-2xl font-bold font-mono text-accent">{completedCount}</p>
               </div>
-              <CheckCircle className="w-8 h-8 text-[#00FF41]" />
+              <CheckCircle className="w-8 h-8 text-accent" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[#94A3B8] mb-1">{t('inProgress')}</p>
-                <p className="text-2xl font-bold font-mono text-[#3B82F6]">{inProgressCount}</p>
+                <p className="text-sm text-muted-foreground mb-1">{t('inProgress')}</p>
+                <p className="text-2xl font-bold font-mono text-primary">{inProgressCount}</p>
               </div>
-              <CircleDot className="w-8 h-8 text-[#3B82F6]" />
+              <CircleDot className="w-8 h-8 text-primary" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[#94A3B8] mb-1">{t('avgScore')}</p>
+                <p className="text-sm text-muted-foreground mb-1">{t('avgScore')}</p>
                 <p className="text-2xl font-bold font-mono text-[#F59E0B]">{avgScore}%</p>
               </div>
               <Award className="w-8 h-8 text-[#F59E0B]" />
@@ -137,24 +137,24 @@ export default function MyLabs() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-[#1E293B] border-[#334155]">
+      <Card className="bg-card border-border">
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder={t('searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-[#0F172A] border-[#334155]"
+                className="pl-10 bg-background border-border"
               />
             </div>
 
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-[180px] bg-[#0F172A] border-[#334155]">
+              <SelectTrigger className="w-full md:w-[180px] bg-background border-border">
                 <SelectValue placeholder={t('allStatus')} />
               </SelectTrigger>
-              <SelectContent className="bg-[#1E293B] border-[#334155]">
+              <SelectContent className="bg-card border-border">
                 <SelectItem value="all">{t('allStatus')}</SelectItem>
                 <SelectItem value="not-started">{t('notCompleted')}</SelectItem>
                 <SelectItem value="running">{t('running')}</SelectItem>
@@ -164,10 +164,10 @@ export default function MyLabs() {
             </Select>
 
             <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
-              <SelectTrigger className="w-full md:w-[180px] bg-[#0F172A] border-[#334155]">
+              <SelectTrigger className="w-full md:w-[180px] bg-background border-border">
                 <SelectValue placeholder={t('allLevels')} />
               </SelectTrigger>
-              <SelectContent className="bg-[#1E293B] border-[#334155]">
+              <SelectContent className="bg-card border-border">
                 <SelectItem value="all">{t('allLevels')}</SelectItem>
                 <SelectItem value="beginner">{t('beginner')}</SelectItem>
                 <SelectItem value="intermediate">{t('intermediate')}</SelectItem>
@@ -176,10 +176,10 @@ export default function MyLabs() {
             </Select>
 
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-full md:w-[180px] bg-[#0F172A] border-[#334155]">
+              <SelectTrigger className="w-full md:w-[180px] bg-background border-border">
                 <SelectValue placeholder={t('allCategories')} />
               </SelectTrigger>
-              <SelectContent className="bg-[#1E293B] border-[#334155]">
+              <SelectContent className="bg-card border-border">
                 <SelectItem value="all">{t('allCategories')}</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat} value={cat}>{cat}</SelectItem>
@@ -195,7 +195,7 @@ export default function MyLabs() {
         {filteredLabs.map((lab) => (
           <Card
             key={lab.id}
-            className="bg-[#1E293B] border-[#334155] hover:border-[#3B82F6] transition-colors"
+            className="bg-card border-border hover:border-primary transition-colors"
           >
             <CardHeader>
               <div className="flex items-start justify-between mb-2">
@@ -207,13 +207,13 @@ export default function MyLabs() {
                   {lab.difficulty}
                 </Badge>
               </div>
-              <CardDescription className="text-[#94A3B8]">
+              <CardDescription className="text-muted-foreground">
                 {lab.description}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center gap-4 text-sm text-[#94A3B8]">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <BookOpen className="w-4 h-4" />
                     {lab.category}
@@ -237,24 +237,24 @@ export default function MyLabs() {
                 {lab.progress > 0 && (
                   <div>
                     <div className="flex items-center justify-between text-sm mb-2">
-                      <span className="text-[#94A3B8]">{t('progress')}</span>
-                      <span className="font-mono text-[#00FF41]">{lab.progress}%</span>
+                      <span className="text-muted-foreground">{t('progress')}</span>
+                      <span className="font-mono text-accent">{lab.progress}%</span>
                     </div>
                     <Progress value={lab.progress} className="h-2" />
                   </div>
                 )}
 
                 <div>
-                  <p className="text-sm text-[#94A3B8] mb-2">{t('objectives')}:</p>
+                  <p className="text-sm text-muted-foreground mb-2">{t('objectives')}:</p>
                   <ul className="space-y-1">
                     {lab.objectives.slice(0, 3).map((obj, idx) => (
-                      <li key={idx} className="text-sm text-[#CBD5E1] flex items-start gap-2">
-                        <span className="text-[#00FF41] mt-1">•</span>
+                      <li key={idx} className="text-sm text-foreground flex items-start gap-2">
+                        <span className="text-accent mt-1">•</span>
                         <span>{obj}</span>
                       </li>
                     ))}
                     {lab.objectives.length > 3 && (
-                      <li className="text-sm text-[#94A3B8]">
+                      <li className="text-sm text-muted-foreground">
                         {t('more').replace('{count}', (lab.objectives.length - 3).toString())}
                       </li>
                     )}
@@ -265,9 +265,9 @@ export default function MyLabs() {
                   <Button
                     className={`w-full ${
                       lab.status === 'running'
-                        ? 'bg-[#3B82F6] hover:bg-[#2563EB]'
+                        ? 'bg-[#3B82F6] hover:bg-[#2563EB] text-white'
                         : lab.status === 'completed'
-                        ? 'bg-[#334155] hover:bg-[#475569]'
+                        ? 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                         : 'bg-[#00FF41] hover:bg-[#00DD35] text-[#0F172A]'
                     }`}
                   >
@@ -287,11 +287,11 @@ export default function MyLabs() {
       </div>
 
       {filteredLabs.length === 0 && (
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-12 pb-12 text-center">
-            <BookOpen className="w-16 h-16 text-[#94A3B8] mx-auto mb-4" />
+            <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">{t('noLabsFound')}</h3>
-            <p className="text-[#94A3B8] mb-4">{t('adjustFilters')}</p>
+            <p className="text-muted-foreground mb-4">{t('adjustFilters')}</p>
             <Button
               onClick={() => {
                 setSearchQuery('');
@@ -299,7 +299,7 @@ export default function MyLabs() {
                 setDifficultyFilter('all');
                 setCategoryFilter('all');
               }}
-              className="bg-[#3B82F6] hover:bg-[#2563EB]"
+              className="bg-[#3B82F6] hover:bg-[#2563EB] text-white"
             >
               {t('clearFilters')}
             </Button>

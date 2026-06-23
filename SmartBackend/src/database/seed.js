@@ -396,6 +396,48 @@ const ACHIEVEMENTS = [
   { achievementId: "ach-ccna-ready", name: "CCNA Ready", description: "Complete all 40+ CCNA labs â€” you are ready for the exam!", points: 500, category: "CCNA", tier: "platinum", maxProgress: 40, icon: "ðŸŽ“" },
 ];
 
+// ─── Default users to seed ───────────────────────────────────────
+// Passwords meet the registration policy (8+ chars, at least one letter
+// and one digit). Override via env vars in production. These accounts make
+// it possible to log in immediately after seeding a fresh database.
+const SEED_USERS = [
+  {
+    name: "Admin",
+    email: (process.env.SEED_ADMIN_EMAIL || "admin@smartitlab.com").toLowerCase(),
+    password: process.env.SEED_ADMIN_PASSWORD || "Admin@1234",
+    role: "admin",
+    plan: "enterprise",
+    emailVerified: true,
+  },
+  {
+    name: "Demo Student",
+    email: (process.env.SEED_STUDENT_EMAIL || "student@smartitlab.com").toLowerCase(),
+    password: process.env.SEED_STUDENT_PASSWORD || "Student@1234",
+    role: "student",
+    plan: "free",
+    emailVerified: true,
+  },
+];
+
+// Seed users one-by-one so the pre-save hook hashes each password.
+// (findOneAndUpdate would bypass the hashing hook, storing plain text.)
+const seedUsers = async () => {
+  for (const u of SEED_USERS) {
+    const existing = await User.findOne({ email: u.email });
+    if (existing) {
+      console.log(`User already exists, skipping: ${u.email}`);
+      continue;
+    }
+    const user = await User.create(u);
+    await UserSettings.findOneAndUpdate(
+      { userId: user._id },
+      { userId: user._id },
+      { upsert: true, new: true }
+    );
+    console.log(`Created ${u.role} user: ${u.email}`);
+  }
+};
+
 // â”€â”€â”€ Seed runner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const seedDatabase = async () => {
   try {
@@ -410,6 +452,7 @@ const seedDatabase = async () => {
       await Achievement.findOneAndUpdate({ achievementId: ach.achievementId }, ach, { upsert: true, new: true });
     }
     console.log(`Seeded ${ACHIEVEMENTS.length} achievements`);
+    await seedUsers();
     await mongoose.disconnect();
     console.log("Seed complete.");
     process.exit(0);

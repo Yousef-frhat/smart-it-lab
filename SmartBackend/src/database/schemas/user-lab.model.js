@@ -8,6 +8,7 @@ const terminalEntrySchema = new mongoose.Schema(
     command: { type: String, required: true },
     output: { type: String, default: "" },
     isError: { type: Boolean, default: false },
+    prompt: { type: String, default: "" },
   },
   { _id: false }
 );
@@ -30,6 +31,9 @@ const userLabSchema = new mongoose.Schema(
     completedObjectives: [{ type: Number }], // indices of completed objectives
     commandHistory: [terminalEntrySchema],
     currentDevice: { type: String },
+    // Per-device live CLI state for the stateful IOS engine
+    // (keyed by device name → { mode, hostname, interfaces, vlans, ... })
+    deviceStates: { type: mongoose.Schema.Types.Mixed, default: {} },
     startedAt: { type: Date },
     completedAt: { type: Date },
     lastActivity: { type: Date, default: Date.now },

@@ -47,12 +47,12 @@ export default function Leaderboard() {
     if (rank === 1) return <Crown className="w-6 h-6 text-[#FFD700]" />;
     if (rank === 2) return <Medal className="w-6 h-6 text-[#C0C0C0]" />;
     if (rank === 3) return <Medal className="w-6 h-6 text-[#CD7F32]" />;
-    return <span className="font-mono text-lg text-[#94A3B8]">#{rank}</span>;
+    return <span className="font-mono text-lg text-muted-foreground">#{rank}</span>;
   };
 
   const getTrendIcon = (trend: string, change?: number) => {
     if (trend === 'up') return (
-      <div className="flex items-center gap-1 text-[#00FF41]">
+      <div className="flex items-center gap-1 text-accent">
         <TrendingUp className="w-4 h-4" />
         {change && <span className="text-xs">+{change}</span>}
       </div>
@@ -64,7 +64,7 @@ export default function Leaderboard() {
       </div>
     );
     return (
-      <div className="flex items-center gap-1 text-[#94A3B8]">
+      <div className="flex items-center gap-1 text-muted-foreground">
         <Minus className="w-4 h-4" />
       </div>
     );
@@ -80,8 +80,8 @@ export default function Leaderboard() {
             key={entry.userId}
             className={`flex items-center gap-4 p-4 rounded-lg border transition-all ${
               isCurrentUser 
-                ? 'bg-[#3B82F6]/10 border-[#3B82F6] ring-2 ring-[#3B82F6]/50' 
-                : 'bg-[#0F172A] border-[#334155] hover:border-[#475569]'
+                ? 'bg-[#3B82F6]/10 border-primary ring-2 ring-[#3B82F6]/50' 
+                : 'bg-background border-border hover:border-[#475569]'
             }`}
           >
             <div className="w-16 flex items-center justify-center">
@@ -106,19 +106,19 @@ export default function Leaderboard() {
 
             <div className="hidden md:flex items-center gap-6 text-sm">
               <div className="text-center">
-                <div className="text-[#94A3B8] text-xs mb-1">{t('points')}</div>
+                <div className="text-muted-foreground text-xs mb-1">{t('points')}</div>
                 <div className="font-mono font-bold text-[#FFD700]">{entry.totalPoints}</div>
               </div>
               <div className="text-center">
-                <div className="text-[#94A3B8] text-xs mb-1">{t('labs')}</div>
+                <div className="text-muted-foreground text-xs mb-1">{t('labs')}</div>
                 <div className="font-mono font-bold">{entry.labsCompleted}</div>
               </div>
               <div className="text-center">
-                <div className="text-[#94A3B8] text-xs mb-1">{t('avgScore')}</div>
-                <div className="font-mono font-bold text-[#00FF41]">{Math.round(entry.avgScore || 0)}%</div>
+                <div className="text-muted-foreground text-xs mb-1">{t('avgScore')}</div>
+                <div className="font-mono font-bold text-accent">{Math.round(entry.avgScore || 0)}%</div>
               </div>
               <div className="text-center">
-                <div className="text-[#94A3B8] text-xs mb-1 flex items-center gap-1">
+                <div className="text-muted-foreground text-xs mb-1 flex items-center gap-1">
                   <Flame className="w-3 h-3" />
                   {t('currentStreak')}
                 </div>
@@ -134,7 +134,7 @@ export default function Leaderboard() {
       })}
 
       {data.length === 0 && (
-        <div className="text-center py-8 text-[#94A3B8]">
+        <div className="text-center py-8 text-muted-foreground">
           No entries yet
         </div>
       )}
@@ -144,7 +144,7 @@ export default function Leaderboard() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 text-[#3B82F6] animate-spin" />
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
       </div>
     );
   }
@@ -156,15 +156,15 @@ export default function Leaderboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold mb-2">{t('leaderboardTitle')}</h1>
-        <p className="text-[#94A3B8]">{t('leaderboardSubtitle')}</p>
+        <p className="text-muted-foreground">{t('leaderboardSubtitle')}</p>
       </div>
 
       {currentUserEntry && (
-        <Card className="bg-gradient-to-r from-[#3B82F6]/20 to-[#00FF41]/20 border-[#3B82F6]">
+        <Card className="bg-gradient-to-r from-[#3B82F6]/20 to-[#00FF41]/20 border-primary">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[#94A3B8] mb-2">{t('yourRank')}</p>
+                <p className="text-sm text-muted-foreground mb-2">{t('yourRank')}</p>
                 <div className="flex items-center gap-3">
                   <span className="text-4xl font-bold font-mono">#{currentUserEntry.rank}</span>
                   {getTrendIcon(currentUserEntry.trend, currentUserEntry.trendChange)}
@@ -172,16 +172,16 @@ export default function Leaderboard() {
               </div>
               <div className="grid grid-cols-3 gap-6 text-center">
                 <div>
-                  <p className="text-sm text-[#94A3B8] mb-1">{t('points')}</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t('points')}</p>
                   <p className="text-2xl font-bold font-mono text-[#FFD700]">{currentUserEntry.totalPoints}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-[#94A3B8] mb-1">{t('labs')}</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t('labs')}</p>
                   <p className="text-2xl font-bold font-mono">{currentUserEntry.labsCompleted}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-[#94A3B8] mb-1">{t('avgScore')}</p>
-                  <p className="text-2xl font-bold font-mono text-[#00FF41]">{Math.round(currentUserEntry.avgScore || 0)}%</p>
+                  <p className="text-sm text-muted-foreground mb-1">{t('avgScore')}</p>
+                  <p className="text-2xl font-bold font-mono text-accent">{Math.round(currentUserEntry.avgScore || 0)}%</p>
                 </div>
               </div>
             </div>
@@ -189,19 +189,19 @@ export default function Leaderboard() {
         </Card>
       )}
 
-      <Card className="bg-[#1E293B] border-[#334155]">
+      <Card className="bg-card border-border">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Trophy className="w-6 h-6 text-[#FFD700]" />
             <CardTitle>{t('rankings')}</CardTitle>
           </div>
-          <CardDescription className="text-[#94A3B8]">
+          <CardDescription className="text-muted-foreground">
             {t('trackPerformance')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="weekly" className="w-full" onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 bg-[#0F172A] mb-6">
+            <TabsList className="grid w-full grid-cols-2 bg-background mb-6">
               <TabsTrigger value="weekly">{t('thisWeek')}</TabsTrigger>
               <TabsTrigger value="monthly">{t('thisMonth')}</TabsTrigger>
             </TabsList>
@@ -216,35 +216,35 @@ export default function Leaderboard() {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex items-start gap-3">
               <Star className="w-5 h-5 text-[#FFD700] mt-1" />
               <div>
                 <h4 className="font-semibold mb-1">{t('earnPoints')}</h4>
-                <p className="text-sm text-[#94A3B8]">Complete labs, maintain streaks, and score high to earn points</p>
+                <p className="text-sm text-muted-foreground">Complete labs, maintain streaks, and score high to earn points</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex items-start gap-3">
-              <Target className="w-5 h-5 text-[#3B82F6] mt-1" />
+              <Target className="w-5 h-5 text-primary mt-1" />
               <div>
                 <h4 className="font-semibold mb-1">{t('weeklyReset')}</h4>
-                <p className="text-sm text-[#94A3B8]">Weekly leaderboard resets every Sunday at midnight UTC</p>
+                <p className="text-sm text-muted-foreground">Weekly leaderboard resets every Sunday at midnight UTC</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex items-start gap-3">
-              <Award className="w-5 h-5 text-[#00FF41] mt-1" />
+              <Award className="w-5 h-5 text-accent mt-1" />
               <div>
                 <h4 className="font-semibold mb-1">{t('rewards')}</h4>
-                <p className="text-sm text-[#94A3B8]">Top 3 players each week earn special profile badges</p>
+                <p className="text-sm text-muted-foreground">Top 3 players each week earn special profile badges</p>
               </div>
             </div>
           </CardContent>

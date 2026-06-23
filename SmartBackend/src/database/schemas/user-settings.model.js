@@ -10,7 +10,7 @@ const userSettingsSchema = new mongoose.Schema(
     },
     theme: {
       type: String,
-      enum: ["dark", "light", "auto"],
+      enum: ["dark", "light"],
       default: "dark",
     },
     language: {

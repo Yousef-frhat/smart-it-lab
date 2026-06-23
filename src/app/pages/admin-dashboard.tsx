@@ -154,15 +154,15 @@ export default function AdminDashboard() {
       title: "Active Users",
       value: stats.activeUsers.toString(),
       total: stats.totalUsers,
-      icon: <Users className="w-5 h-5 text-[#3B82F6]" />,
-      color: "text-[#3B82F6]"
+      icon: <Users className="w-5 h-5 text-primary" />,
+      color: "text-primary"
     },
     {
       title: "Running Labs",
       value: stats.runningLabs.toString(),
       total: stats.totalLabs,
-      icon: <Activity className="w-5 h-5 text-[#00FF41]" />,
-      color: "text-[#00FF41]"
+      icon: <Activity className="w-5 h-5 text-accent" />,
+      color: "text-accent"
     },
     {
       title: "Monthly Revenue",
@@ -182,27 +182,27 @@ export default function AdminDashboard() {
       title: "Avg Session Time",
       value: stats.avgSessionTime > 0 ? `${stats.avgSessionTime} min` : "No data yet",
       total: "Per session",
-      icon: <Clock className="w-5 h-5 text-[#3B82F6]" />,
-      color: "text-[#3B82F6]"
+      icon: <Clock className="w-5 h-5 text-primary" />,
+      color: "text-primary"
     },
   ];
 
   const getServerStatusColor = (status: string) => {
     switch (status) {
-      case 'healthy': return 'text-[#00FF41] bg-[#00FF41]/20';
+      case 'healthy': return 'text-accent bg-[#00FF41]/20';
       case 'warning': return 'text-[#F59E0B] bg-[#F59E0B]/20';
       case 'critical': return 'text-[#EF4444] bg-[#EF4444]/20';
-      case 'offline': return 'text-[#94A3B8] bg-[#94A3B8]/20';
-      default: return 'text-[#94A3B8] bg-[#94A3B8]/20';
+      case 'offline': return 'text-muted-foreground bg-[#94A3B8]/20';
+      default: return 'text-muted-foreground bg-[#94A3B8]/20';
     }
   };
 
   const getUserStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-[#00FF41] bg-[#00FF41]/20';
-      case 'inactive': return 'text-[#94A3B8] bg-[#94A3B8]/20';
+      case 'active': return 'text-accent bg-[#00FF41]/20';
+      case 'inactive': return 'text-muted-foreground bg-[#94A3B8]/20';
       case 'suspended': return 'text-[#EF4444] bg-[#EF4444]/20';
-      default: return 'text-[#94A3B8] bg-[#94A3B8]/20';
+      default: return 'text-muted-foreground bg-[#94A3B8]/20';
     }
   };
 
@@ -227,19 +227,19 @@ export default function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-[#3B82F6] animate-spin" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0F172A]">
+    <div className="min-h-screen bg-background">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0F172A] border-r border-[#334155] flex flex-col">
-        <div className="p-6 border-b border-[#334155]">
+      <aside className="fixed left-0 top-0 h-screen w-64 bg-background border-r border-border flex flex-col">
+        <div className="p-6 border-b border-border">
           <Link to="/" className="flex items-center gap-2">
-            <Network className="w-6 h-6 text-[#00FF41]" />
+            <Network className="w-6 h-6 text-accent" />
             <span className="font-mono text-xl tracking-tight">{t('adminDashboard')}</span>
           </Link>
         </div>
@@ -247,15 +247,15 @@ export default function AdminDashboard() {
         <nav className="flex-1 p-4 space-y-2">
           <Button
             variant="ghost"
-            className={`w-full justify-start ${currentTab === 'overview' ? 'bg-[#1E293B]' : ''} hover:bg-[#334155]`}
+            className={`w-full justify-start ${currentTab === 'overview' ? 'bg-card' : ''} hover:bg-muted`}
             onClick={() => setCurrentTab('overview')}
           >
-            <BarChart3 className="w-4 h-4 mr-2 text-[#00FF41]" />
+            <BarChart3 className="w-4 h-4 mr-2 text-accent" />
             {t('adminOverview')}
           </Button>
           <Button
             variant="ghost"
-            className={`w-full justify-start ${currentTab === 'users' ? 'bg-[#1E293B]' : ''} hover:bg-[#1E293B]`}
+            className={`w-full justify-start ${currentTab === 'users' ? 'bg-card' : ''} hover:bg-card`}
             onClick={() => setCurrentTab('users')}
           >
             <Users className="w-4 h-4 mr-2" />
@@ -263,24 +263,24 @@ export default function AdminDashboard() {
           </Button>
           <Button
             variant="ghost"
-            className={`w-full justify-start ${currentTab === 'servers' ? 'bg-[#1E293B]' : ''} hover:bg-[#1E293B]`}
+            className={`w-full justify-start ${currentTab === 'servers' ? 'bg-card' : ''} hover:bg-card`}
             onClick={() => setCurrentTab('servers')}
           >
             <Server className="w-4 h-4 mr-2" />
             {t('systemHealth')}
           </Button>
           <Link to="/dashboard">
-            <Button variant="ghost" className="w-full justify-start hover:bg-[#1E293B]">
+            <Button variant="ghost" className="w-full justify-start hover:bg-card">
               <Settings className="w-4 h-4 mr-2" />
               Settings
             </Button>
           </Link>
         </nav>
 
-        <div className="p-4 border-t border-[#334155]">
+        <div className="p-4 border-t border-border">
           <Button
             variant="ghost"
-            className="w-full justify-start text-[#EF4444] hover:bg-[#1E293B] hover:text-[#EF4444]"
+            className="w-full justify-start text-[#EF4444] hover:bg-card hover:text-[#EF4444]"
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -298,7 +298,7 @@ export default function AdminDashboard() {
             {currentTab === 'users' && t('manageUsers')}
             {currentTab === 'servers' && t('systemHealth')}
           </h1>
-          <p className="text-[#94A3B8]">
+          <p className="text-muted-foreground">
             {currentTab === 'overview' && 'Monitor system health and manage resources'}
             {currentTab === 'users' && 'Manage users, roles, and permissions'}
             {currentTab === 'servers' && 'Monitor server performance and health'}
@@ -310,18 +310,18 @@ export default function AdminDashboard() {
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {quickStats.map((stat, i) => (
-                <Card key={i} className="bg-[#1E293B] border-[#334155]">
+                <Card key={i} className="bg-card border-border">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="p-2 bg-[#0F172A] rounded-lg">
+                      <div className="p-2 bg-background rounded-lg">
                         {stat.icon}
                       </div>
-                      <Badge className="bg-[#00FF41]/20 text-[#00FF41] border-none font-mono text-xs">
+                      <Badge className="bg-[#00FF41]/20 text-accent border-none font-mono text-xs">
                         {typeof stat.total === 'number' ? `of ${stat.total}` : stat.total}
                       </Badge>
                     </div>
                     <div className={`text-2xl font-bold font-mono mb-1 ${stat.color}`}>{stat.value}</div>
-                    <p className="text-sm text-[#94A3B8]">{stat.title}</p>
+                    <p className="text-sm text-muted-foreground">{stat.title}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -330,10 +330,10 @@ export default function AdminDashboard() {
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {/* Active Users Chart */}
-              <Card className="bg-[#1E293B] border-[#334155]">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle>Active Users</CardTitle>
-                  <CardDescription className="text-[#94A3B8]">Monthly active user growth</CardDescription>
+                  <CardDescription className="text-muted-foreground">Monthly active user growth</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={200}>
@@ -358,10 +358,10 @@ export default function AdminDashboard() {
               </Card>
 
               {/* Revenue Chart */}
-              <Card className="bg-[#1E293B] border-[#334155]">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle>Revenue</CardTitle>
-                  <CardDescription className="text-[#94A3B8]">Monthly revenue trend</CardDescription>
+                  <CardDescription className="text-muted-foreground">Monthly revenue trend</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={200}>
@@ -382,27 +382,27 @@ export default function AdminDashboard() {
             </div>
 
             {/* Recent Activity */}
-            <Card className="bg-[#1E293B] border-[#334155]">
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle>{t('recentActivity')}</CardTitle>
-                <CardDescription className="text-[#94A3B8]">Latest user actions and events</CardDescription>
+                <CardDescription className="text-muted-foreground">Latest user actions and events</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-center justify-between p-3 bg-[#0F172A] rounded-lg">
+                    <div key={activity.id} className="flex items-center justify-between p-3 bg-background rounded-lg">
                       <div className="flex items-center gap-3">
                         <div className="w-2 h-2 rounded-full bg-[#00FF41]" />
                         <div>
                           <p className="text-sm font-semibold">{activity.user}</p>
-                          <p className="text-xs text-[#94A3B8]">{activity.action}</p>
+                          <p className="text-xs text-muted-foreground">{activity.action}</p>
                         </div>
                       </div>
-                      <span className="text-xs text-[#94A3B8] font-mono">{activity.time}</span>
+                      <span className="text-xs text-muted-foreground font-mono">{activity.time}</span>
                     </div>
                   ))}
                   {recentActivity.length === 0 && (
-                    <div className="text-center py-4 text-[#94A3B8]">No recent activity</div>
+                    <div className="text-center py-4 text-muted-foreground">No recent activity</div>
                   )}
                 </div>
               </CardContent>
@@ -415,44 +415,44 @@ export default function AdminDashboard() {
             {/* Search Bar */}
             <div className="mb-6">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Search users by name or email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-[#1E293B] border-[#334155]"
+                  className="pl-10 bg-card border-border"
                 />
               </div>
             </div>
 
             {/* Users Table */}
-            <Card className="bg-[#1E293B] border-[#334155]">
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle>{t('manageUsers')}</CardTitle>
-                <CardDescription className="text-[#94A3B8]">
+                <CardDescription className="text-muted-foreground">
                   {filteredUsers.length} users found
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-[#334155] hover:bg-[#0F172A]">
-                      <TableHead className="text-[#94A3B8]">User</TableHead>
-                      <TableHead className="text-[#94A3B8]">Role</TableHead>
-                      <TableHead className="text-[#94A3B8]">Plan</TableHead>
-                      <TableHead className="text-[#94A3B8]">Status</TableHead>
-                      <TableHead className="text-[#94A3B8]">Labs Completed</TableHead>
-                      <TableHead className="text-[#94A3B8]">Last Active</TableHead>
-                      <TableHead className="text-[#94A3B8]">Actions</TableHead>
+                    <TableRow className="border-border hover:bg-background">
+                      <TableHead className="text-muted-foreground">User</TableHead>
+                      <TableHead className="text-muted-foreground">Role</TableHead>
+                      <TableHead className="text-muted-foreground">Plan</TableHead>
+                      <TableHead className="text-muted-foreground">Status</TableHead>
+                      <TableHead className="text-muted-foreground">Labs Completed</TableHead>
+                      <TableHead className="text-muted-foreground">Last Active</TableHead>
+                      <TableHead className="text-muted-foreground">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredUsers.map((u) => (
-                      <TableRow key={u.id} className="border-[#334155] hover:bg-[#0F172A]">
+                      <TableRow key={u.id} className="border-border hover:bg-background">
                         <TableCell>
                           <div>
                             <p className="font-semibold">{u.name}</p>
-                            <p className="text-xs text-[#94A3B8] font-mono">{u.email}</p>
+                            <p className="text-xs text-muted-foreground font-mono">{u.email}</p>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -462,8 +462,8 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>
                           <Badge className={`capitalize ${u.plan === 'enterprise' ? 'bg-[#8B5CF6]/20 text-[#8B5CF6]' :
-                              u.plan === 'pro' ? 'bg-[#3B82F6]/20 text-[#3B82F6]' :
-                                'bg-[#94A3B8]/20 text-[#94A3B8]'
+                              u.plan === 'pro' ? 'bg-[#3B82F6]/20 text-primary' :
+                                'bg-[#94A3B8]/20 text-muted-foreground'
                             } border-none`}>
                             {u.plan}
                           </Badge>
@@ -474,7 +474,7 @@ export default function AdminDashboard() {
                           </Badge>
                         </TableCell>
                         <TableCell className="font-mono">{u.labsCompleted}</TableCell>
-                        <TableCell className="text-sm text-[#94A3B8]">
+                        <TableCell className="text-sm text-muted-foreground">
                           {formatLastActive(u.lastActive)}
                         </TableCell>
                         <TableCell>
@@ -492,7 +492,7 @@ export default function AdminDashboard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="border-[#00FF41] text-[#00FF41] hover:bg-[#00FF41]/10"
+                                className="border-[#00FF41] text-accent hover:bg-[#00FF41]/10"
                                 onClick={() => handleSuspendUser(u.id)}
                               >
                                 <UserCheck className="w-3 h-3" />
@@ -518,8 +518,8 @@ export default function AdminDashboard() {
 
                 {/* Pagination Controls */}
                 {pagination.pages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#334155]">
-                    <p className="text-sm text-[#94A3B8]">
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground">
                       Page <span className="font-mono text-white">{pagination.page}</span> of{' '}
                       <span className="font-mono text-white">{pagination.pages}</span>{' '}
                       (<span className="font-mono text-white">{pagination.total}</span> total)
@@ -528,7 +528,7 @@ export default function AdminDashboard() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-[#334155] hover:bg-[#334155]"
+                        className="border-border hover:bg-muted"
                         disabled={pagination.page <= 1}
                         onClick={async () => {
                           const result = await getUsers({ page: pagination.page - 1 }).catch(() => null);
@@ -540,7 +540,7 @@ export default function AdminDashboard() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="border-[#334155] hover:bg-[#334155]"
+                        className="border-border hover:bg-muted"
                         disabled={pagination.page >= pagination.pages}
                         onClick={async () => {
                           const result = await getUsers({ page: pagination.page + 1 }).catch(() => null);
@@ -560,7 +560,7 @@ export default function AdminDashboard() {
         {currentTab === 'servers' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {servers.map((server) => (
-              <Card key={server.id} className="bg-[#1E293B] border-[#334155]">
+              <Card key={server.id} className="bg-card border-border">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
@@ -570,7 +570,7 @@ export default function AdminDashboard() {
                           {server.status}
                         </Badge>
                       </CardTitle>
-                      <CardDescription className="text-[#94A3B8] font-mono text-xs mt-1">
+                      <CardDescription className="text-muted-foreground font-mono text-xs mt-1">
                         {server.type} • {server.location}
                       </CardDescription>
                     </div>
@@ -580,10 +580,10 @@ export default function AdminDashboard() {
                   <div className="space-y-3">
                     <div>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="text-[#94A3B8]">CPU Usage</span>
+                        <span className="text-muted-foreground">CPU Usage</span>
                         <span className="font-mono font-semibold">{Math.floor(server.cpu)}%</span>
                       </div>
-                      <div className="h-2 bg-[#0F172A] rounded-full overflow-hidden">
+                      <div className="h-2 bg-background rounded-full overflow-hidden">
                         <div
                           className={`h-full ${server.cpu > 90 ? 'bg-[#EF4444]' :
                               server.cpu > 75 ? 'bg-[#F59E0B]' :
@@ -596,10 +596,10 @@ export default function AdminDashboard() {
 
                     <div>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="text-[#94A3B8]">Memory Usage</span>
+                        <span className="text-muted-foreground">Memory Usage</span>
                         <span className="font-mono font-semibold">{Math.floor(server.memory)}%</span>
                       </div>
-                      <div className="h-2 bg-[#0F172A] rounded-full overflow-hidden">
+                      <div className="h-2 bg-background rounded-full overflow-hidden">
                         <div
                           className={`h-full ${server.memory > 90 ? 'bg-[#EF4444]' :
                               server.memory > 75 ? 'bg-[#F59E0B]' :
@@ -612,10 +612,10 @@ export default function AdminDashboard() {
 
                     <div>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="text-[#94A3B8]">Disk Usage</span>
+                        <span className="text-muted-foreground">Disk Usage</span>
                         <span className="font-mono font-semibold">{server.disk}%</span>
                       </div>
-                      <div className="h-2 bg-[#0F172A] rounded-full overflow-hidden">
+                      <div className="h-2 bg-background rounded-full overflow-hidden">
                         <div
                           className={`h-full ${server.disk > 90 ? 'bg-[#EF4444]' :
                               server.disk > 75 ? 'bg-[#F59E0B]' :
@@ -627,7 +627,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs text-[#94A3B8] pt-2 border-t border-[#334155]">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t border-border">
                     <Clock className="w-3 h-3" />
                     <span>Uptime: <span className="font-mono">{formatUptime(server.uptime)}</span></span>
                   </div>
@@ -636,7 +636,7 @@ export default function AdminDashboard() {
             ))}
 
             {servers.length === 0 && (
-              <div className="col-span-2 text-center py-12 text-[#94A3B8]">
+              <div className="col-span-2 text-center py-12 text-muted-foreground">
                 No server metrics available
               </div>
             )}
@@ -646,15 +646,15 @@ export default function AdminDashboard() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="bg-[#1E293B] border-[#334155]">
+        <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#94A3B8]">
+            <AlertDialogDescription className="text-muted-foreground">
               This will permanently delete {selectedUser?.name}'s account and all associated data. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-[#0F172A] border-[#334155] hover:bg-[#334155]">
+            <AlertDialogCancel className="bg-background border-border hover:bg-muted">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction

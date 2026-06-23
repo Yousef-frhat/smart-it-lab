@@ -5,7 +5,7 @@ import Achievement from "../../../database/schemas/achievement.model.js";
 import UserAchievement from "../../../database/schemas/user-achievement.model.js";
 import LeaderboardEntry from "../../../database/schemas/leaderboard.model.js";
 import { uuid } from "../../../common/utils/uuid.js";
-import { executeCommand } from "../terminal-engine.js";
+import { runIOS, getPrompt, initDeviceState } from "../ios-engine.js";
 import { emitLabEvent } from "../../events/connection-registry.js";
 
 
@@ -310,13 +310,16 @@ export const startLab = async (req, res, next) => {
         $set: {
           status: "running",
           lastActivity: new Date(),
+          // Fresh boot each time the lab is started: clear the live CLI
+          // state and terminal history so the device starts unconfigured.
+          deviceStates: {},
+          commandHistory: [],
         },
         $setOnInsert: {
           startedAt: new Date(),
           progress: 0,
           score: 0,
           completedObjectives: [],
-          commandHistory: [],
         },
       },
       { upsert: true, new: true }
@@ -510,29 +513,43 @@ export const runCommand = async (req, res, next) => {
       });
     }
 
-    const { output, isError } = executeCommand(command, device);
+    const deviceName = device || userLab.currentDevice || "Router";
+
+    // ── Stateful IOS engine ──────────────────────────────────────
+    // Load (or initialise) this device's live CLI state, run the command
+    // through the IOS state machine, then persist the updated state.
+    const states = userLab.deviceStates || {};
+    let deviceState = states[deviceName] || initDeviceState(deviceName);
+
+    const beforePrompt = getPrompt(deviceState);
+    const result = runIOS(command, deviceState);
+    deviceState = result.state;
+    const afterPrompt = getPrompt(deviceState);
+    const { output, isError } = result;
 
     const entry = {
       entryId: `cmd-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       timestamp: new Date(),
-      device: device || "Router",
+      device: deviceName,
       command,
       output,
       isError,
+      prompt: beforePrompt,
     };
 
-    // Append to history and update lastActivity/currentDevice
+    // Append to history and persist the per-device CLI state
     await UserLab.findByIdAndUpdate(userLab._id, {
       $push: { commandHistory: { $each: [entry], $slice: -500 } },
       $set: {
         lastActivity: new Date(),
-        currentDevice: device || userLab.currentDevice,
+        currentDevice: deviceName,
+        [`deviceStates.${deviceName}`]: deviceState,
       },
     });
 
     res.json({
       success: true,
-      data: { entry },
+      data: { entry, prompt: afterPrompt },
     });
 
     // Emit terminal output event via SSE

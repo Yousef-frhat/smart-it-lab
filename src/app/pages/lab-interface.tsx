@@ -44,6 +44,7 @@ export default function LabInterface() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showScoreModal, setShowScoreModal] = useState(false);
   const [submittedScore, setSubmittedScore] = useState(0);
+  const [currentPrompt, setCurrentPrompt] = useState<string>("");
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const isExecuting = useRef(false);
 
@@ -100,6 +101,14 @@ export default function LabInterface() {
       terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
     });
   }, [terminalHistory]);
+
+  // Reset the live prompt to user-EXEC when the selected device changes.
+  // (The backend keeps each device's real CLI state; this just resets the
+  // on-screen prompt so it starts at "<device>>" for the newly selected node.)
+  useEffect(() => {
+    const name = lab?.topology.find((n) => n.id === selectedDevice)?.name;
+    if (name) setCurrentPrompt(`${name}>`);
+  }, [selectedDevice]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Handle SSE events ──────────────────────────────────────────
   useEffect(() => {
@@ -191,8 +200,9 @@ export default function LabInterface() {
     isExecuting.current = true;
 
     try {
-      const entry = await apiExecuteCommand(id, commandInput, currentDevice?.name ?? selectedDevice);
+      const { entry, nextPrompt } = await apiExecuteCommand(id, commandInput, currentDevice?.name ?? selectedDevice);
       setTerminalHistory(prev => [...prev, entry]);
+      setCurrentPrompt(nextPrompt);
       setCommandInput("");
       // Score and objectives update via SSE progress events only
     } catch (error: unknown) {
@@ -274,8 +284,9 @@ export default function LabInterface() {
     // Set the command in the input (instant visual feedback) and execute immediately
     setCommandInput(cmd);
     try {
-      const entry = await apiExecuteCommand(id, cmd, currentDevice?.name ?? selectedDevice);
+      const { entry, nextPrompt } = await apiExecuteCommand(id, cmd, currentDevice?.name ?? selectedDevice);
       setTerminalHistory(prev => [...prev, entry]);
+      setCurrentPrompt(nextPrompt);
       setCommandInput("");
     } catch (error: unknown) {
       const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "";
@@ -326,10 +337,10 @@ export default function LabInterface() {
 
   if (!lab) {
     return (
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-16 h-16 text-[#3B82F6] animate-spin mx-auto mb-4" />
-          <p className="text-[#94A3B8]">Loading lab...</p>
+          <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading lab...</p>
         </div>
       </div>
     );
@@ -370,10 +381,10 @@ export default function LabInterface() {
   const canSubmit = completedObjectives >= 1 && !isSubmitted;
 
   return (
-    <div className="h-screen bg-[#0F172A] flex flex-col">
+    <div className="h-screen bg-background flex flex-col">
       {/* Score Modal */}
       <Dialog open={showScoreModal} onOpenChange={setShowScoreModal}>
-        <DialogContent className="bg-[#1E293B] border-[#334155] text-[#E2E8F0] max-w-md">
+        <DialogContent className="bg-card border-border text-foreground max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-center">
               {t('labSubmitted')} ✅
@@ -382,7 +393,7 @@ export default function LabInterface() {
           <div className="space-y-6 py-2">
             {/* Big score */}
             <div className="text-center">
-              <p className="text-sm text-[#94A3B8] mb-1">{t('yourScore')}</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('yourScore')}</p>
               <p
                 className="text-6xl font-bold font-mono tabular-nums"
                 style={{
@@ -390,13 +401,13 @@ export default function LabInterface() {
                 }}
               >
                 {submittedScore}
-                <span className="text-2xl text-[#64748B]"> / 100</span>
+                <span className="text-2xl text-muted-foreground"> / 100</span>
               </p>
             </div>
 
             {/* Objectives summary */}
-            <div className="bg-[#0F172A] rounded-lg p-4 space-y-2">
-              <p className="text-sm font-semibold text-[#94A3B8] mb-3">
+            <div className="bg-muted rounded-lg p-4 space-y-2">
+              <p className="text-sm font-semibold text-muted-foreground mb-3">
                 {t('objectivesCompleted')
                   .replace('{count}', completedObjectiveIndices.length.toString())
                   .replace('{total}', (lab?.objectives.length ?? 0).toString())}
@@ -410,7 +421,7 @@ export default function LabInterface() {
                     ) : (
                       <XCircle className="w-4 h-4 text-[#EF4444] mt-0.5 shrink-0" />
                     )}
-                    <span className={done ? "text-[#E2E8F0]" : "text-[#64748B]"}>
+                    <span className={done ? "text-foreground" : "text-muted-foreground"}>
                       {objective}
                     </span>
                   </div>
@@ -428,16 +439,16 @@ export default function LabInterface() {
         </DialogContent>
       </Dialog>
       {/* Top Bar */}
-      <header className="h-16 border-b border-[#334155] bg-[#0F172A] flex items-center justify-between px-6">
+      <header className="h-16 border-b border-border bg-background flex items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <Link to="/dashboard">
-            <Button variant="ghost" size="sm" className="hover:bg-[#1E293B]">
+            <Button variant="ghost" size="sm" className="hover:bg-muted">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
           </Link>
           <div className="flex items-center gap-2">
-            <Network className="w-5 h-5 text-[#00FF41]" />
+            <Network className="w-5 h-5 text-accent" />
             <span className="font-semibold">{lab.name}</span>
             <Badge variant="outline" className="font-mono text-xs">
               {lab.difficulty}
@@ -480,27 +491,27 @@ export default function LabInterface() {
               )}
             </Button>
           )}
-          <span className="text-sm text-[#94A3B8] font-mono">Time: {formatTime(elapsedTime)}</span>
+          <span className="text-sm text-muted-foreground font-mono">Time: {formatTime(elapsedTime)}</span>
         </div>
       </header>
 
       {/* Main Layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel - Instructions */}
-        <div className="w-80 border-r border-[#334155] bg-[#0F172A] overflow-y-auto">
+        <div className="w-80 border-r border-border bg-background overflow-y-auto">
           <div className="p-6 space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-2">Lab Instructions</h3>
-              <p className="text-sm text-[#94A3B8] mb-4">
+              <p className="text-sm text-muted-foreground mb-4">
                 {lab.description}
               </p>
-              <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
                 <span className="font-mono">{lab.category}</span>
                 <span>•</span>
                 <span className="font-mono">{lab.estimatedTime}</span>
               </div>
               <Progress value={lab.progress} className="mb-2" />
-              <p className="text-xs text-[#94A3B8]">Progress: {completedObjectives}/{lab.objectives.length} objectives completed</p>
+              <p className="text-xs text-muted-foreground">Progress: {completedObjectives}/{lab.objectives.length} objectives completed</p>
             </div>
 
             <div>
@@ -525,20 +536,20 @@ export default function LabInterface() {
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm leading-snug ${
                           isCompleted
-                            ? 'line-through text-[#64748B]'
-                            : 'text-[#CBD5E1]'
+                            ? 'line-through text-muted-foreground'
+                            : 'text-foreground'
                         }`}>
                           {objective}
                         </p>
                         {!isCompleted && (
-                          <span className="inline-block mt-1 text-[10px] font-medium text-[#475569] uppercase tracking-wider">
+                          <span className="inline-block mt-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
                             Not completed
                           </span>
                         )}
                       </div>
                       {isCompleted
                         ? <CheckCircle2 className="w-4 h-4 text-[#00FF41] shrink-0 mt-0.5" />
-                        : <div className="w-4 h-4 shrink-0 mt-0.5 rounded-full border border-[#334155] bg-[#1E293B]" />
+                        : <div className="w-4 h-4 shrink-0 mt-0.5 rounded-full border border-border bg-card" />
                       }
                     </div>
                   );
@@ -547,7 +558,7 @@ export default function LabInterface() {
             </div>
 
             {lab.commands && lab.commands.length > 0 && (
-              <Card className="bg-[#1E293B] border-[#334155]">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="text-sm">Useful Commands</CardTitle>
                 </CardHeader>
@@ -559,7 +570,7 @@ export default function LabInterface() {
                         type="button"
                         disabled={lab.status !== 'running'}
                         onClick={() => handleRunUsefulCommand(cmd)}
-                        className="w-full text-left text-xs text-[#94A3B8] font-mono bg-[#0F172A] p-2 rounded hover:bg-[#1E293B] hover:text-[#00FF41] hover:border-[#00FF41]/30 border border-transparent transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="w-full text-left text-xs text-muted-foreground font-mono bg-background p-2 rounded hover:bg-muted hover:text-accent hover:border-[#00FF41]/30 border border-transparent transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         {cmd}
                       </button>
@@ -574,7 +585,7 @@ export default function LabInterface() {
         {/* Center Panel - Topology & Terminal */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Network Topology */}
-          <div className="h-1/2 border-b border-[#334155] bg-[#0F172A] p-6 overflow-auto">
+          <div className="h-1/2 border-b border-border bg-background p-6 overflow-auto">
             <h3 className="text-sm font-semibold mb-4">Network Topology</h3>
             <div className="relative min-h-[400px]">
               {/* Render connections */}
@@ -604,8 +615,8 @@ export default function LabInterface() {
                   key={node.id}
                   className={`absolute w-24 h-24 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all ${
                     selectedDevice === node.id
-                      ? 'ring-2 ring-[#00FF41] bg-[#1E293B]'
-                      : 'bg-[#1E293B] hover:bg-[#334155]'
+                      ? 'ring-2 ring-[#00FF41] bg-card'
+                      : 'bg-card hover:bg-muted'
                   }`}
                   style={{
                     left: node.position.x,
@@ -621,7 +632,7 @@ export default function LabInterface() {
                   </div>
                   <span className="text-xs mt-2 font-mono">{node.name}</span>
                   {node.ip && (
-                    <span className="text-[10px] text-[#94A3B8] font-mono">{node.ip}</span>
+                    <span className="text-[10px] text-muted-foreground font-mono">{node.ip}</span>
                   )}
                   <div
                     className={`absolute -top-2 -right-2 w-4 h-4 rounded-full border-2 border-[#0F172A] ${
@@ -659,7 +670,7 @@ export default function LabInterface() {
                 .map((entry) => (
                   <div key={entry.id}>
                     <div className="text-[#3B82F6]">
-                      {entry.device}&gt; <span className="text-white">{entry.command}</span>
+                      {entry.prompt || `${entry.device}>`} <span className="text-white">{entry.command}</span>
                     </div>
                     <div className={entry.isError ? 'text-[#EF4444]' : 'text-[#00FF41]'}>
                       {entry.output.split('\n').map((line, i) => (
@@ -674,7 +685,7 @@ export default function LabInterface() {
             </div>
 
             <form onSubmit={handleCommand} className="p-4 border-t border-[#334155] bg-black flex gap-2">
-              <span className="text-[#3B82F6] font-mono">{currentDevice?.name || 'Device'}&gt;</span>
+              <span className="text-[#3B82F6] font-mono">{currentPrompt || `${currentDevice?.name || 'Device'}>`}</span>
               <input
                 type="text"
                 value={commandInput}
@@ -689,7 +700,7 @@ export default function LabInterface() {
         </div>
 
         {/* Right Panel - Evaluation & Feedback */}
-        <div className="w-80 border-l border-[#334155] bg-[#0F172A] overflow-y-auto">
+        <div className="w-80 border-l border-border bg-background overflow-y-auto">
           <div className="p-6 space-y-6">
 
             {/* Live Validation feed */}
@@ -702,10 +713,10 @@ export default function LabInterface() {
                       <div key={idx} className="flex items-start gap-3 text-sm">
                         <CheckCircle2 className="w-4 h-4 text-[#00FF41] mt-1 shrink-0" />
                         <div className="flex-1">
-                          <p className="text-xs text-[#475569] font-mono mb-1">
+                          <p className="text-xs text-muted-foreground font-mono mb-1">
                             {new Date().toLocaleTimeString()}
                           </p>
-                          <p className="text-xs text-[#E2E8F0]">
+                          <p className="text-xs text-foreground">
                             {lab.objectives[idx] ?? `Objective ${idx + 1}`}
                           </p>
                         </div>
@@ -713,9 +724,9 @@ export default function LabInterface() {
                     ))}
                     {completedObjectives < lab.objectives.length && (
                       <div className="flex items-start gap-3 text-sm">
-                        <div className="w-4 h-4 mt-1 shrink-0 rounded-full border border-[#334155] bg-[#1E293B]" />
+                        <div className="w-4 h-4 mt-1 shrink-0 rounded-full border border-border bg-card" />
                         <div className="flex-1">
-                          <p className="text-xs text-[#475569]">
+                          <p className="text-xs text-muted-foreground">
                             {lab.objectives.length - completedObjectives} objective
                             {lab.objectives.length - completedObjectives !== 1 ? 's' : ''} remaining
                           </p>
@@ -725,10 +736,10 @@ export default function LabInterface() {
                   </>
                 ) : (
                   <div className="flex flex-col items-center gap-2 py-3 text-center">
-                    <div className="w-8 h-8 rounded-full border border-[#334155] bg-[#1E293B] flex items-center justify-center">
-                      <Terminal className="w-4 h-4 text-[#475569]" />
+                    <div className="w-8 h-8 rounded-full border border-border bg-card flex items-center justify-center">
+                      <Terminal className="w-4 h-4 text-muted-foreground" />
                     </div>
-                    <p className="text-xs text-[#475569] leading-relaxed">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
                       Run commands in the terminal<br />to validate objectives
                     </p>
                   </div>
@@ -741,10 +752,10 @@ export default function LabInterface() {
               <Card className="bg-[#3B82F6]/20 border-[#3B82F6]">
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-3">
-                    <Loader2 className="w-5 h-5 text-[#3B82F6] animate-spin" />
+                    <Loader2 className="w-5 h-5 text-primary animate-spin" />
                     <div>
-                      <p className="text-sm font-semibold text-[#3B82F6]">Evaluating Lab...</p>
-                      <p className="text-xs text-[#94A3B8] mt-1">This may take a few moments</p>
+                      <p className="text-sm font-semibold text-primary">Evaluating Lab...</p>
+                      <p className="text-xs text-muted-foreground mt-1">This may take a few moments</p>
                     </div>
                   </div>
                 </CardContent>
@@ -752,10 +763,10 @@ export default function LabInterface() {
             )}
 
             {/* ── Current Score Card ─────────────────────────────── */}
-            <div className="rounded-xl bg-[#0A1628] border border-[#1E3A5F] p-5 space-y-4">
+            <div className="rounded-xl bg-card border border-border p-5 space-y-4">
               {/* Title row — always visible */}
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-widest text-[#64748B]">
+                <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                   Current Score
                 </span>
                 {(isSubmitted || currentScore > 0 || completedObjectives > 0) && (
@@ -780,11 +791,11 @@ export default function LabInterface() {
                     style={{ color: scoreColor }}
                   >
                     {currentScore}
-                    <span className="text-xl font-medium text-[#64748B] ml-0.5">%</span>
+                    <span className="text-xl font-medium text-muted-foreground ml-0.5">%</span>
                   </div>
 
                   {/* Animated progress bar */}
-                  <div className="h-2.5 w-full rounded-full bg-[#1E293B] overflow-hidden">
+                  <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
@@ -797,23 +808,23 @@ export default function LabInterface() {
 
                   {/* Objectives counter */}
                   <div className="flex items-center justify-between pt-1">
-                    <span className="flex items-center gap-1.5 text-xs text-[#64748B]">
+                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF41]" />
                       Objectives completed
                     </span>
-                    <span className="font-mono text-sm font-semibold text-[#E2E8F0]">
+                    <span className="font-mono text-sm font-semibold text-foreground">
                       {completedObjectives}
-                      <span className="text-[#64748B] font-normal"> / {totalObjectives}</span>
+                      <span className="text-muted-foreground font-normal"> / {totalObjectives}</span>
                     </span>
                   </div>
                 </>
               ) : (
                 /* Empty state — no progress yet */
                 <div className="flex flex-col items-center justify-center py-4 gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#1E293B] border border-[#334155] flex items-center justify-center">
-                    <CheckCircle2 className="w-5 h-5 text-[#334155]" />
+                  <div className="w-10 h-10 rounded-full bg-muted border border-border flex items-center justify-center">
+                    <CheckCircle2 className="w-5 h-5 text-muted-foreground" />
                   </div>
-                  <p className="text-xs text-[#475569] text-center leading-relaxed">
+                  <p className="text-xs text-muted-foreground text-center leading-relaxed">
                     Start completing objectives<br />to see your live score
                   </p>
                 </div>
@@ -851,7 +862,7 @@ export default function LabInterface() {
               </Button>
             )}
             {!canSubmit && !isSubmitted && lab.status === 'running' && (
-              <p className="text-xs text-[#64748B] text-center -mt-2">
+              <p className="text-xs text-muted-foreground text-center -mt-2">
                 Complete at least 1 objective to submit
               </p>
             )}

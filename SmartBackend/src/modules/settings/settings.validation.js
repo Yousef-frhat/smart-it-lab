@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const updateSettingsSchema = z.object({
-  theme: z.enum(["dark", "light", "auto"]).optional(),
+  theme: z.enum(["dark", "light"]).optional(),
   language: z.enum(["en", "ar", "fr", "de", "es", "zh"]).optional(),
   notifications: z
     .object({

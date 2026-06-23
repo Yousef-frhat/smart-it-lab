@@ -236,7 +236,7 @@ export default function Achievements() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 text-[#3B82F6] animate-spin" />
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
       </div>
     );
   }
@@ -254,7 +254,7 @@ export default function Achievements() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold mb-2">{t('achievementsTitle')}</h1>
-        <p className="text-[#94A3B8]">{t('achievementsSubtitle')}</p>
+        <p className="text-muted-foreground">{t('achievementsSubtitle')}</p>
       </div>
 
       {/* Stats Overview */}
@@ -263,7 +263,7 @@ export default function Achievements() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[#94A3B8] mb-1">{t('totalPoints')}</p>
+                <p className="text-sm text-muted-foreground mb-1">{t('totalPoints')}</p>
                 <p className="text-3xl font-bold font-mono text-[#FFD700]">{totalPoints}</p>
               </div>
               <Trophy className="w-10 h-10 text-[#FFD700]" />
@@ -271,36 +271,36 @@ export default function Achievements() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[#94A3B8] mb-1">{t('unlocked')}</p>
-                <p className="text-3xl font-bold font-mono text-[#00FF41]">{unlockedAchievements.length}</p>
-                <p className="text-xs text-[#94A3B8]">/ {achievements.length}</p>
+                <p className="text-sm text-muted-foreground mb-1">{t('unlocked')}</p>
+                <p className="text-3xl font-bold font-mono text-accent">{unlockedAchievements.length}</p>
+                <p className="text-xs text-muted-foreground">/ {achievements.length}</p>
               </div>
-              <CheckCircle className="w-10 h-10 text-[#00FF41]" />
+              <CheckCircle className="w-10 h-10 text-accent" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[#94A3B8] mb-1">{t('completion')}</p>
-                <p className="text-3xl font-bold font-mono text-[#3B82F6]">{completionRate}%</p>
+                <p className="text-sm text-muted-foreground mb-1">{t('completion')}</p>
+                <p className="text-3xl font-bold font-mono text-primary">{completionRate}%</p>
               </div>
-              <TrendingUp className="w-10 h-10 text-[#3B82F6]" />
+              <TrendingUp className="w-10 h-10 text-primary" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[#94A3B8] mb-1">{t('inProgress')}</p>
+                <p className="text-sm text-muted-foreground mb-1">{t('inProgress')}</p>
                 <p className="text-3xl font-bold font-mono text-[#F59E0B]">
                   {lockedAchievements.filter(a => (a.progress || 0) > 0).length}
                 </p>
@@ -313,13 +313,13 @@ export default function Achievements() {
 
       {/* Recent Unlocks */}
       {unlockedAchievements.length > 0 && (
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Star className="w-5 h-5 text-[#FFD700]" />
               {t('unlocked')}
             </CardTitle>
-            <CardDescription className="text-[#94A3B8]"></CardDescription>
+            <CardDescription className="text-muted-foreground"></CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -334,13 +334,13 @@ export default function Achievements() {
                     </div>
                     <div className="flex-1">
                       <h4 className="font-semibold mb-1">{achievement.name}</h4>
-                      <p className="text-sm text-[#94A3B8] mb-2">{achievement.description}</p>
+                      <p className="text-sm text-muted-foreground mb-2">{achievement.description}</p>
                       <div className="flex items-center justify-between">
-                        <Badge className="bg-[#0F172A] border-[#334155]">
+                        <Badge className="bg-background border-border">
                           +{achievement.points} {t('pts')}
                         </Badge>
                         {achievement.unlockedAt && (
-                          <span className="text-xs text-[#94A3B8] flex items-center gap-1">
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             {new Date(achievement.unlockedAt).toLocaleDateString()}
                           </span>
@@ -361,16 +361,16 @@ export default function Achievements() {
         const categoryUnlocked = categoryAchievements.filter(a => a.unlocked).length;
         
         return (
-          <Card key={category} className="bg-[#1E293B] border-[#334155]">
+          <Card key={category} className="bg-card border-border">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>{category}</CardTitle>
-                  <CardDescription className="text-[#94A3B8]">
+                  <CardDescription className="text-muted-foreground">
                     {t('ofUnlocked').replace('{unlocked}', categoryUnlocked.toString()).replace('{total}', categoryAchievements.length.toString())}
                   </CardDescription>
                 </div>
-                <Badge className="bg-[#0F172A] border-[#334155] text-[#00FF41]">
+                <Badge className="bg-background border-border text-accent">
                   {Math.floor((categoryUnlocked / categoryAchievements.length) * 100)}%
                 </Badge>
               </div>
@@ -383,7 +383,7 @@ export default function Achievements() {
                     className={`p-4 rounded-lg border ${
                       achievement.unlocked 
                         ? `${getTierClasses(achievement.tier).border} ${getTierClasses(achievement.tier).bg}` 
-                        : 'border-[#334155] bg-[#0F172A]/50 opacity-60'
+                        : 'border-border bg-background/50 opacity-60'
                     }`}
                   >
                     <div className="flex items-start gap-3 mb-3">
@@ -392,23 +392,23 @@ export default function Achievements() {
                           {getIcon(achievement.icon)}
                         </div>
                       ) : (
-                        <div className="text-[#94A3B8]">
+                        <div className="text-muted-foreground">
                           <Lock className="w-6 h-6" />
                         </div>
                       )}
                       <div className="flex-1">
-                        <h4 className={`font-semibold mb-1 ${achievement.unlocked ? '' : 'text-[#94A3B8]'}`}>
+                        <h4 className={`font-semibold mb-1 ${achievement.unlocked ? '' : 'text-muted-foreground'}`}>
                           {achievement.name}
                         </h4>
-                        <p className="text-sm text-[#94A3B8]">{achievement.description}</p>
+                        <p className="text-sm text-muted-foreground">{achievement.description}</p>
                       </div>
                     </div>
                     
                     {achievement.maxProgress && achievement.maxProgress > 1 && (
                       <div className="mb-3">
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-[#94A3B8]">{t('progress')}</span>
-                          <span className="font-mono text-[#00FF41]">
+                          <span className="text-muted-foreground">{t('progress')}</span>
+                          <span className="font-mono text-accent">
                             {achievement.progress || 0}/{achievement.maxProgress}
                           </span>
                         </div>

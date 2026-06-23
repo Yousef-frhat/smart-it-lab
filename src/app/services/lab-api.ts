@@ -40,6 +40,7 @@ export interface TerminalEntry {
   command: string;
   output: string;
   isError?: boolean;
+  prompt?: string;   // the IOS prompt shown before this command (e.g. "R1(config)#")
 }
 
 export interface Objective {
@@ -87,16 +88,21 @@ export async function executeCommand(
   labId: string,
   command: string,
   device: string
-): Promise<TerminalEntry> {
+): Promise<{ entry: TerminalEntry; nextPrompt: string }> {
   const { data } = await api.post(`/labs/${labId}/terminal`, { command, device })
   const entry = data.data?.entry ?? data.entry
+  const nextPrompt: string = data.data?.prompt ?? data.prompt ?? `${device}>`
   return {
-    id: entry.entryId ?? entry.id ?? `cmd-${Date.now()}`,
-    timestamp: entry.timestamp ?? new Date().toISOString(),
-    device: entry.device ?? device,
-    command: entry.command ?? command,
-    output: entry.output ?? '',
-    isError: entry.isError ?? false,
+    entry: {
+      id: entry.entryId ?? entry.id ?? `cmd-${Date.now()}`,
+      timestamp: entry.timestamp ?? new Date().toISOString(),
+      device: entry.device ?? device,
+      command: entry.command ?? command,
+      output: entry.output ?? '',
+      isError: entry.isError ?? false,
+      prompt: entry.prompt ?? `${device}>`,
+    },
+    nextPrompt,
   }
 }
 

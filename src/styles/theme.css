@@ -189,36 +189,43 @@
 }
 
 /* ── Light mode overrides ──────────────────────────────────────── */
+/*
+ * Eye-friendly light palette:
+ * - Page background is a soft slate (#EEF2F7) rather than pure white to
+ *   cut glare and reduce eye strain during long sessions.
+ * - Text is slate-800 (#1E293B) instead of pure black for softer contrast.
+ * - Borders are gentle so cards separate without hard lines.
+ */
 html.light {
-  --background: #F8FAFC;
-  --foreground: #0F172A;
+  --background: #EEF2F7;
+  --foreground: #1E293B;
   --card: #FFFFFF;
-  --card-foreground: #0F172A;
+  --card-foreground: #1E293B;
   --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
-  --primary: #3B82F6;
+  --popover-foreground: #1E293B;
+  --primary: #2563EB;
   --primary-foreground: #ffffff;
   --secondary: #E2E8F0;
-  --secondary-foreground: #0F172A;
-  --muted: #F1F5F9;
-  --muted-foreground: #64748B;
+  --secondary-foreground: #1E293B;
+  --muted: #E7EDF4;
+  --muted-foreground: #5B6678;
   --accent: #16A34A;
   --accent-foreground: #ffffff;
-  --destructive: #EF4444;
+  --destructive: #DC2626;
   --destructive-foreground: #ffffff;
-  --border: #E2E8F0;
-  --input: #F1F5F9;
-  --input-background: #F1F5F9;
+  --border: #D7DFEA;
+  --input: #FFFFFF;
+  --input-background: #FFFFFF;
   --switch-background: #CBD5E1;
-  --ring: #3B82F6;
-  --sidebar: #F1F5F9;
-  --sidebar-foreground: #0F172A;
-  --sidebar-primary: #3B82F6;
+  --ring: #2563EB;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1E293B;
+  --sidebar-primary: #2563EB;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #E2E8F0;
-  --sidebar-accent-foreground: #0F172A;
-  --sidebar-border: #E2E8F0;
-  --sidebar-ring: #3B82F6;
+  --sidebar-accent: #E7EDF4;
+  --sidebar-accent-foreground: #1E293B;
+  --sidebar-border: #D7DFEA;
+  --sidebar-ring: #2563EB;
 }
 
 /* ── Dark mode (explicit class — matches :root defaults) ────────── */
@@ -252,4 +259,48 @@ html.dark {
   --sidebar-accent-foreground: #E2E8F0;
   --sidebar-border: #334155;
   --sidebar-ring: #3B82F6;
+}
+
+/* ── Form controls: guarantee readable text in BOTH themes ─────── */
+/*
+ * Inputs/selects/textareas must always paint their text with the theme
+ * foreground colour. Without this they can inherit an unexpected colour
+ * (e.g. dark text on a dark field) and become invisible while typing.
+ */
+input,
+textarea,
+select {
+  color: var(--foreground);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+
+/*
+ * Browser autofill fix (Chrome/Edge/Safari):
+ * The user agent forces a near-white background and BLACK text on
+ * autofilled fields via the -webkit-autofill pseudo-class. On a dark
+ * input that makes the typed/filled text invisible — which is exactly
+ * the "I can't see what I'm typing" bug on the login form.
+ *
+ * We pin the text colour to the theme foreground and repaint the field
+ * background with a large inset box-shadow (the only reliable way to
+ * override the user-agent autofill background colour).
+ */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--foreground);
+  caret-color: var(--foreground);
+  -webkit-box-shadow: 0 0 0 1000px var(--input-background) inset;
+          box-shadow: 0 0 0 1000px var(--input-background) inset;
+  /* Delay the autofill background animation effectively forever so the
+     repainted background sticks. */
+  transition: background-color 9999s ease-in-out 0s;
 }

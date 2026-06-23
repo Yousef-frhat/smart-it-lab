@@ -94,7 +94,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Logo */}
         <div className="text-center">
@@ -102,7 +102,7 @@ export default function AuthPage() {
             <Network className="w-8 h-8 text-[#00FF41]" />
             <span className="font-mono text-2xl tracking-tight">Smart IT Lab</span>
           </Link>
-          <p className="text-[#94A3B8] text-sm">Master Enterprise Networking</p>
+          <p className="text-muted-foreground text-sm">Master Enterprise Networking</p>
         </div>
 
         {/* Verification banner */}
@@ -121,16 +121,16 @@ export default function AuthPage() {
         )}
 
         {/* Auth Card */}
-        <Card className="bg-[#1E293B] border-[#334155]">
+        <Card className="bg-card border-border">
           <CardHeader>
             <CardTitle className="text-2xl text-center">Welcome</CardTitle>
-            <CardDescription className="text-center text-[#94A3B8]">
+            <CardDescription className="text-center text-muted-foreground">
               Sign in to access your lab environment
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-[#0F172A]">
+              <TabsList className="grid w-full grid-cols-2 bg-muted">
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="register">Register</TabsTrigger>
               </TabsList>
@@ -139,7 +139,7 @@ export default function AuthPage() {
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">University Email</Label>
-                    <Input id="email" name="email" type="email" placeholder="student@university.edu" className="bg-[#0F172A] border-[#334155] font-mono" required />
+                    <Input id="email" name="email" type="email" placeholder="student@university.edu" className="font-mono" required />
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -148,7 +148,7 @@ export default function AuthPage() {
                         Forgot password?
                       </button>
                     </div>
-                    <Input id="password" name="password" type="password" placeholder="••••••••" className="bg-[#0F172A] border-[#334155]" required />
+                    <Input id="password" name="password" type="password" placeholder="••••••••" required />
                   </div>
                   <Button type="submit" className="w-full bg-[#3B82F6] hover:bg-[#2563EB] text-white" disabled={isLoading}>
                     {isLoading ? "Signing in..." : "Sign In"}
@@ -157,18 +157,18 @@ export default function AuthPage() {
 
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-[#334155]" />
+                    <span className="w-full border-t border-border" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-[#1E293B] px-2 text-[#94A3B8]">OR CONTINUE WITH</span>
+                    <span className="bg-card px-2 text-muted-foreground">OR CONTINUE WITH</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <Button type="button" variant="outline" className="bg-[#0F172A] border-[#334155] hover:bg-[#334155]" onClick={() => handleSocialLogin("github")} disabled={isLoading}>
+                  <Button type="button" variant="outline" className="bg-background border-border hover:bg-muted" onClick={() => handleSocialLogin("github")} disabled={isLoading}>
                     <Github className="w-4 h-4 mr-2" /> GitHub
                   </Button>
-                  <Button type="button" variant="outline" className="bg-[#0F172A] border-[#334155] hover:bg-[#334155]" onClick={() => handleSocialLogin("google")} disabled={isLoading}>
+                  <Button type="button" variant="outline" className="bg-background border-border hover:bg-muted" onClick={() => handleSocialLogin("google")} disabled={isLoading}>
                     <Mail className="w-4 h-4 mr-2" /> Google
                   </Button>
                 </div>
@@ -178,19 +178,19 @@ export default function AuthPage() {
                 <form onSubmit={handleRegister} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" name="name" type="text" placeholder="Ahmed Hassan" className="bg-[#0F172A] border-[#334155]" required />
+                    <Input id="name" name="name" type="text" placeholder="Ahmed Hassan" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="reg-email">University Email</Label>
-                    <Input id="reg-email" name="email" type="email" placeholder="student@university.edu" className="bg-[#0F172A] border-[#334155] font-mono" required />
+                    <Input id="reg-email" name="email" type="email" placeholder="student@university.edu" className="font-mono" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="reg-password">Password</Label>
-                    <Input id="reg-password" name="password" type="password" placeholder="••••••••" className="bg-[#0F172A] border-[#334155]" required />
+                    <Input id="reg-password" name="password" type="password" placeholder="••••••••" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <Input id="confirm-password" name="confirmPassword" type="password" placeholder="••••••••" className="bg-[#0F172A] border-[#334155]" required />
+                    <Input id="confirm-password" name="confirmPassword" type="password" placeholder="••••••••" required />
                   </div>
                   <Button type="submit" className="w-full bg-[#00FF41] hover:bg-[#00DD35] text-[#0F172A] font-semibold" disabled={isLoading}>
                     {isLoading ? "Creating account..." : "Create Account"}
@@ -199,18 +199,18 @@ export default function AuthPage() {
 
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-[#334155]" />
+                    <span className="w-full border-t border-border" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-[#1E293B] px-2 text-[#94A3B8]">OR CONTINUE WITH</span>
+                    <span className="bg-card px-2 text-muted-foreground">OR CONTINUE WITH</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <Button type="button" variant="outline" className="bg-[#0F172A] border-[#334155] hover:bg-[#334155]" onClick={() => handleSocialLogin("github")} disabled={isLoading}>
+                  <Button type="button" variant="outline" className="bg-background border-border hover:bg-muted" onClick={() => handleSocialLogin("github")} disabled={isLoading}>
                     <Github className="w-4 h-4 mr-2" /> GitHub
                   </Button>
-                  <Button type="button" variant="outline" className="bg-[#0F172A] border-[#334155] hover:bg-[#334155]" onClick={() => handleSocialLogin("google")} disabled={isLoading}>
+                  <Button type="button" variant="outline" className="bg-background border-border hover:bg-muted" onClick={() => handleSocialLogin("google")} disabled={isLoading}>
                     <Mail className="w-4 h-4 mr-2" /> Google
                   </Button>
                 </div>
@@ -219,7 +219,7 @@ export default function AuthPage() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-sm text-[#94A3B8]">
+        <p className="text-center text-sm text-muted-foreground">
           By continuing, you agree to our{" "}
           <a href="#" className="text-[#3B82F6] hover:text-[#2563EB]">Terms of Service</a>{" "}
           and{" "}
@@ -229,10 +229,10 @@ export default function AuthPage() {
 
       {/* Forgot Password Dialog */}
       <Dialog open={forgotOpen} onOpenChange={setForgotOpen}>
-        <DialogContent className="bg-[#1E293B] border-[#334155] sm:max-w-md">
+        <DialogContent className="bg-card border-border sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Reset Password</DialogTitle>
-            <DialogDescription className="text-[#94A3B8]">
+            <DialogDescription className="text-muted-foreground">
               Enter your email and we'll send you a reset link.
             </DialogDescription>
           </DialogHeader>
@@ -240,15 +240,15 @@ export default function AuthPage() {
           {forgotSent ? (
             <div className="py-6 text-center space-y-3">
               <CheckCircle2 className="w-12 h-12 text-[#00FF41] mx-auto" />
-              <p className="text-[#E2E8F0] font-medium">Check your inbox</p>
-              <p className="text-sm text-[#94A3B8]">If an account with that email exists, a password reset link has been sent.</p>
+              <p className="text-foreground font-medium">Check your inbox</p>
+              <p className="text-sm text-muted-foreground">If an account with that email exists, a password reset link has been sent.</p>
               <Button onClick={() => setForgotOpen(false)} className="mt-4 bg-[#3B82F6] hover:bg-[#2563EB] text-white">Done</Button>
             </div>
           ) : (
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="forgot-email">Email Address</Label>
-                <Input id="forgot-email" type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} placeholder="student@university.edu" className="bg-[#0F172A] border-[#334155] font-mono" required />
+                <Input id="forgot-email" type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} placeholder="student@university.edu" className="font-mono" required />
               </div>
               <Button type="submit" className="w-full bg-[#3B82F6] hover:bg-[#2563EB] text-white" disabled={forgotLoading}>
                 {forgotLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</> : "Send Reset Link"}

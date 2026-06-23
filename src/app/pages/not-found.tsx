@@ -6,7 +6,7 @@ export default function NotFound() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#0F172A] flex items-center justify-center relative overflow-hidden select-none">
+    <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden select-none">
       {/* Scanline overlay */}
       <div
         className="pointer-events-none fixed inset-0 z-10"
@@ -30,7 +30,7 @@ export default function NotFound() {
         {/* Glitch 404 */}
         <div className="relative mb-6">
           <h1
-            className="text-[10rem] sm:text-[12rem] font-black leading-none text-[#3B82F6] tracking-tighter"
+            className="text-[10rem] sm:text-[12rem] font-black leading-none text-primary tracking-tighter"
             style={{ textShadow: "0 0 60px rgba(59,130,246,0.35)" }}
           >
             <span className="inline-block animate-glitch-1">4</span>
@@ -54,15 +54,15 @@ export default function NotFound() {
         {/* Terminal-style output */}
         <div className="text-left max-w-lg mx-auto mb-10 space-y-2 font-mono text-sm sm:text-base">
           <p className="text-[#EF4444]">
-            <span className="text-[#94A3B8]">&gt;</span> ERROR: The requested
+            <span className="text-muted-foreground">&gt;</span> ERROR: The requested
             lab environment does not exist
           </p>
           <p className="text-[#F59E0B]">
-            <span className="text-[#94A3B8]">&gt;</span> Possible causes:
+            <span className="text-muted-foreground">&gt;</span> Possible causes:
             invalid ID, lab deleted, or access denied
           </p>
           <p className="text-[#00FF41]">
-            <span className="text-[#94A3B8]">&gt;</span> Returning to safe
+            <span className="text-muted-foreground">&gt;</span> Returning to safe
             zone...
             <span className="inline-block w-2 h-5 bg-[#00FF41] ml-1 align-middle animate-blink" />
           </p>
@@ -80,7 +80,7 @@ export default function NotFound() {
           <Button
             variant="outline"
             onClick={() => navigate("/")}
-            className="border-[#334155] text-[#94A3B8] hover:bg-[#1E293B] hover:text-white px-6 py-3 text-base"
+            className="border-border text-muted-foreground hover:bg-card hover:text-white px-6 py-3 text-base"
           >
             <Home className="w-5 h-5 mr-2" />
             Go Home

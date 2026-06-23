@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (u) {
           setUser(normalizeUser(u));
           // Apply saved theme immediately so the UI matches user preferences
-          applyTheme((u.settings?.theme as 'dark' | 'light' | 'auto') || 'dark');
+          applyTheme(u.settings?.theme === 'light' ? 'light' : 'dark');
         }
       })
       .catch(() => {
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('accessToken', accessToken);
     setUser(normalizeUser(payload.user));
     // Apply the user's saved theme preference immediately
-    applyTheme((payload.user?.settings?.theme as 'dark' | 'light' | 'auto') || 'dark');
+    applyTheme(payload.user?.settings?.theme === 'light' ? 'light' : 'dark');
     toast.success('Logged in successfully!');
   };
 

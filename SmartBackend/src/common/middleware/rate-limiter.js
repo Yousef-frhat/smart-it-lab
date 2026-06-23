@@ -4,16 +4,24 @@ import rateLimit from "express-rate-limit";
 const noOp = (_req, _res, next) => next();
 
 const isTest = process.env.NODE_ENV === "test";
+const isDev = (process.env.NODE_ENV || "development") === "development";
 
 /**
  * Auth limiter — login, register, refresh-token.
- * 10 requests per 15-minute window per IP (tightened from 15).
+ * Production: 10 failed attempts per 15-minute window per IP.
+ * Development: a generous 200 so local testing / repeated logins
+ * don't lock you out.
+ *
+ * `skipSuccessfulRequests: true` means only FAILED attempts count
+ * toward the limit — a legitimate user logging in successfully (even
+ * many times) is never locked out. This is the correct behavior for a
+ * brute-force guard.
  */
 export const authLimiter = isTest
   ? noOp
   : rateLimit({
       windowMs: 15 * 60 * 1000,
-      max: 10,
+      max: isDev ? 200 : 10,
       standardHeaders: true,
       legacyHeaders: false,
       // Security: don't reveal internal details in the error message
@@ -21,10 +29,9 @@ export const authLimiter = isTest
         success: false,
         message: "Too many requests. Please try again later.",
       },
-      // Security: skip successful requests — count only failures
-      // This prevents legitimate users being locked out by their own
-      // valid requests piling up against the window.
-      skipSuccessfulRequests: false,
+      // Security: skip successful requests — count only failures so
+      // legitimate users are never locked out by their own valid logins.
+      skipSuccessfulRequests: true,
     });
 
 /**
