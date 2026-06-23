@@ -1,0 +1,29 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm ci
+
+ARG VITE_API_URL=/api
+ENV VITE_API_URL=$VITE_API_URL
+
+COPY . .
+
+RUN npm run build
+
+
+FROM nginx:1.27-alpine
+
+RUN rm -rf /usr/share/nginx/html/*
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+COPY nginx.railway.template /etc/nginx/templates/default.conf.template
+
+EXPOSE 8080
+
+ENV PORT=8080
+
+CMD ["nginx", "-g", "daemon off;"]
