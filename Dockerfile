@@ -33,7 +33,7 @@ RUN chown -R nginx:nginx /usr/share/nginx/html \
  && touch /var/run/nginx.pid \
  && chown nginx:nginx /var/run/nginx.pid
 
-EXPOSE 80
+EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget -qO- http://localhost/index.html || exit 1
