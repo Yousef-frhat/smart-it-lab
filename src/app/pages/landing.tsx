@@ -33,16 +33,15 @@ export default function LandingPage() {
   ];
 
   const team = [
-    { name: "Ahmed Hassan", role: "DevOps Engineer", avatar: "AH" },
-    { name: "Sara Mohamed", role: "Full-Stack Developer", avatar: "SM" },
-    { name: "Omar Khaled", role: "Network Specialist", avatar: "OK" },
-    { name: "Nour Ali", role: "Security Expert", avatar: "NA" },
-    { name: "Youssef Ibrahim", role: "UI/UX Designer", avatar: "YI" },
-    { name: "Fatma Ahmed", role: "Backend Developer", avatar: "FA" },
-    { name: "Karim Samir", role: "DevOps Engineer", avatar: "KS" },
+    { name: "Yousef Frhat", role: "DevOps Engineer", avatar: "YF" },
+    { name: "Yousef Khaled", role: "Full-Stack Developer", avatar: "YK" },
+    { name: "Fathy Ibrahim", role: "Network Specialist", avatar: "FI" },
+    { name: "El-Sayed El-Ghandour", role: "Security Expert", avatar: "EE" },
+    { name: "Seif Hamdy", role: "UI/UX Designer", avatar: "SH" },
+    { name: "Ahmed Mahmoud", role: "Backend Developer", avatar: "AM" },
   ];
 
-  const supervisor = { name: "Dr. Mohamed Ashraf", role: "Project Supervisor", avatar: "MA" };
+  const supervisor = { name: "Dr. Amina El-Mahalawi", role: "Project Supervisor", avatar: "AE" };
 
   return (
     <div className="min-h-screen bg-background">
@@ -84,15 +83,12 @@ export default function LandingPage() {
             Hands-on simulation, automated grading, zero hardware required. 
             Perfect for CCNA, CompTIA, and networking students.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <Link to="/auth">
               <Button size="lg" className="bg-[#00FF41] hover:bg-[#00DD35] text-[#0F172A] font-semibold">
                 Start Free Trial
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-border hover:bg-card">
-              View Documentation
-            </Button>
           </div>
         </div>
       </section>
@@ -146,7 +142,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold mb-4">Our Team</h2>
           <p className="text-muted-foreground text-lg">Meet the engineers behind Smart IT Lab</p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
           {team.map((member, i) => (
             <Card key={i} className="bg-card border-border hover:border-primary transition-colors">
               <CardContent className="pt-6 text-center">
