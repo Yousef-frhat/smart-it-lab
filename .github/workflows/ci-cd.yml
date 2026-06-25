@@ -20,18 +20,3 @@ jobs:
       - run: npm run build
         env:
           VITE_API_URL: https://beautiful-encouragement-production.up.railway.app/api
-
-  deploy:
-    name: Deploy to Railway
-    needs: [frontend-test]
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-      - name: Deploy Frontend
-        run: railway up --service smart-it-lab --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
