@@ -71,7 +71,6 @@ export async function sendVerificationEmail(to, token) {
     });
   } else {
     console.log(`\n📧 [MAILER] Verification email for ${to}`);
-    console.log(`   Token: ${token}`);
     console.log(`   Link:  ${link}\n`);
   }
 }
@@ -97,7 +96,6 @@ export async function sendPasswordResetEmail(to, token) {
     });
   } else {
     console.log(`\n📧 [MAILER] Password reset email for ${to}`);
-    console.log(`   Token: ${token}`);
     console.log(`   Link:  ${link}\n`);
   }
 }

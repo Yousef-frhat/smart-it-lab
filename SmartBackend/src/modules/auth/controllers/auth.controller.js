@@ -27,7 +27,7 @@ export const register = async (req, res, next) => {
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message: "An account with this email already exists.",
+        message: "Unable to create account. Please try a different email or log in.",
       });
     }
 

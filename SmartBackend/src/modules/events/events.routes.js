@@ -10,6 +10,10 @@ const router = express.Router();
 
 export { emitLabEvent };
 
+// Per-user SSE connection limit to prevent resource exhaustion.
+const MAX_SSE_PER_USER = 10;
+const userConnectionCounts = new Map(); // userId → count
+
 // ── GET /api/events/lab/:id ─────────────────────────────────────
 //
 // Security note on authentication:
@@ -59,6 +63,18 @@ router.get("/lab/:id", (req, res) => {
     return res.status(401).json({ success: false, message: "Invalid or expired token." });
   }
 
+  const userId = decoded.id;
+
+  // Enforce per-user SSE connection limit
+  const currentCount = userConnectionCounts.get(userId) || 0;
+  if (currentCount >= MAX_SSE_PER_USER) {
+    return res.status(429).json({
+      success: false,
+      message: "Too many open SSE connections. Close some before opening new ones.",
+    });
+  }
+  userConnectionCounts.set(userId, currentCount + 1);
+
   const labId = req.params.id;
 
   // Validate labId format to prevent log injection
@@ -90,6 +106,9 @@ router.get("/lab/:id", (req, res) => {
   req.on("close", () => {
     clearInterval(pingInterval);
     removeConnection(labId, res);
+    const remaining = (userConnectionCounts.get(userId) || 1) - 1;
+    if (remaining <= 0) userConnectionCounts.delete(userId);
+    else userConnectionCounts.set(userId, remaining);
   });
 });
 
