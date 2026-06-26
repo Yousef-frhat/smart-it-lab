@@ -15,7 +15,7 @@ COPY . .
 RUN npm run build
 
 # ── Stage 2: Serve with Nginx ────────────────────────────────────
-FROM nginx:1.27-alpine AS runner
+FROM nginx:1.28-alpine AS runner
 
 # Security: remove default nginx config and pages
 RUN rm -rf /usr/share/nginx/html/* \
