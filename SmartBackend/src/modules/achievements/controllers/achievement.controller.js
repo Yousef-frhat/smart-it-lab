@@ -44,7 +44,11 @@ export const getAchievements = async (req, res, next) => {
 export const unlockAchievement = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { progress } = req.body; // optional incremental progress
+
+    // Only allow admin or internal callers to set arbitrary progress;
+    // regular users can only increment by 1 (server-driven progression).
+    const isAdmin = req.user.role === "admin";
+    const { progress } = req.body;
 
     const achievement = await Achievement.findOne({ achievementId: id });
     if (!achievement) {
@@ -74,11 +78,10 @@ export const unlockAchievement = async (req, res, next) => {
       });
     }
 
-    // Update progress
-    const newProgress =
-      progress !== undefined
-        ? Math.min(progress, achievement.maxProgress)
-        : record.progress + 1;
+    // Non-admin users may only increment by 1; admins can set arbitrary values.
+    const newProgress = isAdmin && progress !== undefined
+      ? Math.min(progress, achievement.maxProgress)
+      : Math.min(record.progress + 1, achievement.maxProgress);
 
     record.progress = newProgress;
 
