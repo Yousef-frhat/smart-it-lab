@@ -375,7 +375,8 @@ export const stopLab = async (req, res, next) => {
     // ── Trigger achievement check + leaderboard sync on stop (non-blocking) ──
     checkAndUnlockAchievements(req.user._id, userLab)
       .catch((err) => console.error("Achievement check on stop failed:", err.message));
-    updateLeaderboard(req.user._id);
+    updateLeaderboard(req.user._id)
+      .catch((err) => console.error("Leaderboard update on stop failed:", err.message));
   } catch (error) {
     next(error);
   }
@@ -476,7 +477,8 @@ export const saveProgress = async (req, res, next) => {
         });
 
       // Update leaderboard (non-blocking, non-critical)
-      updateLeaderboard(req.user._id);
+      updateLeaderboard(req.user._id)
+        .catch((err) => console.error("Leaderboard update on save failed:", err.message));
     } else {
       // Emit progress SSE event for non-completion saves
       emitLabEvent(req.params.id, "progress", {

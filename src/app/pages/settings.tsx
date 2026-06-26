@@ -13,6 +13,7 @@ import { useAuth } from "@/app/contexts/auth-context";
 import { useTheme } from "@/app/contexts/theme-context";
 import type { Theme } from "@/app/contexts/theme-context";
 import api from "@/app/services/api";
+import { getErrorMessage } from "@/app/utils/get-error-message";
 import { toast } from "sonner";
 import { Language } from '@/app/utils/translations';
 import {
@@ -77,8 +78,8 @@ export default function Settings() {
         setShowProgress(priv.showActivity ?? true);
         setShowLeaderboard(priv.showLeaderboard ?? true);
       })
-      .catch(() => {
-        // Settings might not exist yet, use defaults
+      .catch((err) => {
+        console.warn("Failed to load settings, using defaults:", err);
       })
       .finally(() => setIsLoadingSettings(false));
   }, []);
@@ -88,8 +89,8 @@ export default function Settings() {
     try {
       await api.patch('/settings/profile', { name });
       toast.success("Profile updated successfully!");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to update profile");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to update profile"));
     } finally {
       setIsLoading(false);
     }
@@ -119,8 +120,8 @@ export default function Settings() {
         localStorage.removeItem('accessToken');
         window.location.href = '/auth';
       }, 2000);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to change password");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to change password"));
     } finally {
       setIsLoading(false);
     }
@@ -138,8 +139,8 @@ export default function Settings() {
         },
       });
       toast.success("Notification preferences saved!");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to save notifications");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to save notifications"));
     } finally {
       setIsLoading(false);
     }
@@ -151,8 +152,8 @@ export default function Settings() {
       await api.patch('/settings', { theme, language: currentLanguage });
       setTheme(theme as Theme);
       toast.success("Appearance settings saved!");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to save settings");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to save settings"));
     } finally {
       setIsLoading(false);
     }
@@ -169,8 +170,8 @@ export default function Settings() {
         },
       });
       toast.success("Privacy settings saved!");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to save privacy settings");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to save privacy settings"));
     } finally {
       setIsLoading(false);
     }
@@ -184,8 +185,8 @@ export default function Settings() {
         localStorage.removeItem('accessToken');
         window.location.href = '/';
       }, 1500);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to delete account");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to delete account"));
     }
   };
 

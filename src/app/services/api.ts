@@ -39,8 +39,8 @@ api.interceptors.response.use(
         // Retry the original request with new token
         original.headers.Authorization = `Bearer ${newAccessToken}`
         return api(original)
-      } catch {
-        // Refresh failed → clear tokens and redirect to login
+      } catch (refreshErr) {
+        console.warn("Token refresh failed, redirecting to login:", refreshErr)
         localStorage.removeItem('accessToken')
         window.location.href = '/auth'
       }

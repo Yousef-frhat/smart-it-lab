@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/app/components/ui/dialog";
 import { Network, Github, Mail, Loader2, CheckCircle2 } from "lucide-react";
+import { getErrorMessage } from "@/app/utils/get-error-message";
 import { useAuth } from "@/app/contexts/auth-context";
 import api from "@/app/services/api";
 import { toast } from "sonner";
@@ -42,8 +43,7 @@ export default function AuthPage() {
       toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast.error(msg || "Login failed. Please try again.");
+      toast.error(getErrorMessage(err, "Login failed. Please try again."));
     } finally {
       setIsLoading(false);
     }
@@ -66,8 +66,7 @@ export default function AuthPage() {
       await register(name, email, password);
       setShowVerifyBanner(true);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast.error(msg || "Registration failed. Please try again.");
+      toast.error(getErrorMessage(err, "Registration failed. Please try again."));
     } finally {
       setIsLoading(false);
     }
@@ -86,8 +85,7 @@ export default function AuthPage() {
       await api.post("/auth/forgot-password", { email: forgotEmail });
       setForgotSent(true);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast.error(msg || "Something went wrong. Try again later.");
+      toast.error(getErrorMessage(err, "Something went wrong. Try again later."));
     } finally {
       setForgotLoading(false);
     }
