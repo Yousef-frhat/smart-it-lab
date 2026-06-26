@@ -1,0 +1,25 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  trivy-scan:
+    name: Trivy Docker Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t smart-it-lab:test .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: smart-it-lab:test
+          format: table
+          exit-code: 0
+          severity: CRITICAL,HIGH
