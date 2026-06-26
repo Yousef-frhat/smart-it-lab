@@ -84,14 +84,24 @@ export async function saveProgress(
   return data.data?.lab ?? data.lab
 }
 
+export interface CommandResult {
+  entry: TerminalEntry;
+  nextPrompt: string;
+  progress: number;
+  score: number;
+  completedObjectives: number[];
+  newlyCompleted: number[];
+  labCompleted: boolean;
+}
+
 export async function executeCommand(
   labId: string,
   command: string,
   device: string
-): Promise<{ entry: TerminalEntry; nextPrompt: string }> {
+): Promise<CommandResult> {
   const { data } = await api.post(`/labs/${labId}/terminal`, { command, device })
-  const entry = data.data?.entry ?? data.entry
-  const nextPrompt: string = data.data?.prompt ?? data.prompt ?? `${device}>`
+  const d = data.data ?? data
+  const entry = d.entry
   return {
     entry: {
       id: entry.entryId ?? entry.id ?? `cmd-${Date.now()}`,
@@ -102,7 +112,12 @@ export async function executeCommand(
       isError: entry.isError ?? false,
       prompt: entry.prompt ?? `${device}>`,
     },
-    nextPrompt,
+    nextPrompt: d.prompt ?? `${device}>`,
+    progress: d.progress ?? 0,
+    score: d.score ?? 0,
+    completedObjectives: d.completedObjectives ?? [],
+    newlyCompleted: d.newlyCompleted ?? [],
+    labCompleted: d.labCompleted ?? false,
   }
 }
 

@@ -229,10 +229,10 @@ export default function StudentDashboard() {
               {recentCompleted.map((lab) => (
                 <div
                   key={lab.id}
-                  className="flex items-center justify-between p-4 bg-background rounded-lg border border-border hover:border-primary transition-colors"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-background rounded-lg border border-border hover:border-primary transition-colors"
                 >
-                  <div className="flex items-center gap-4 flex-1">
-                    <CheckCircle className="w-5 h-5 text-accent flex-shrink-0" />
+                  <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    <CheckCircle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5 sm:mt-0" />
                     <div className="flex-1 min-w-0">
                       <h4 className="font-semibold mb-1 text-foreground truncate">{lab.name}</h4>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
@@ -247,7 +247,7 @@ export default function StudentDashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 flex-shrink-0 self-end sm:self-auto">
                     {lab.score > 0 && (
                       <Badge variant="outline" className="font-mono text-accent border-accent/30">
                         {lab.score}%

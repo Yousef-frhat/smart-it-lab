@@ -310,16 +310,16 @@ export const startLab = async (req, res, next) => {
         $set: {
           status: "running",
           lastActivity: new Date(),
-          // Fresh boot each time the lab is started: clear the live CLI
-          // state and terminal history so the device starts unconfigured.
+          // Fresh boot each time the lab is started: clear live CLI state,
+          // terminal history, and reset progress so it's a clean attempt.
           deviceStates: {},
           commandHistory: [],
-        },
-        $setOnInsert: {
-          startedAt: new Date(),
           progress: 0,
           score: 0,
           completedObjectives: [],
+        },
+        $setOnInsert: {
+          startedAt: new Date(),
         },
       },
       { upsert: true, new: true }
@@ -547,25 +547,20 @@ export const runCommand = async (req, res, next) => {
       },
     });
 
-    res.json({
-      success: true,
-      data: { entry, prompt: afterPrompt },
-    });
-
-    // Emit terminal output event via SSE
-    emitLabEvent(req.params.id, "terminal_output", {
-      device: entry.device,
-      command: entry.command,
-      isError: entry.isError,
-    });
-
-    // ── Objective Validation ─────────────────────────────────────────────────
-    // Uses lab.objectiveCommands[i] — an array of keyword triggers per objective.
-    // An objective is satisfied when the typed command CONTAINS any of its keywords.
-    // Falls back to lab.commands[i] exact match if objectiveCommands is absent.
+    // ── Objective Validation (SYNCHRONOUS) ───────────────────────────────────
+    // Runs BEFORE the HTTP response so the response itself carries the updated
+    // objectives/score/progress. This keeps the terminal fully interactive in
+    // production even when SSE is unavailable (proxy buffering, multi-instance,
+    // blocked EventSource). SSE is emitted afterwards as a best-effort extra.
 
     const normalize = (s) => s.toLowerCase().replace(/\s+/g, ' ').trim();
     const normalizedInput = normalize(command);
+
+    let completedObjectives = userLab.completedObjectives || [];
+    let score = userLab.score || 0;
+    let progress = userLab.progress || 0;
+    let newlyCompletedIds = [];
+    let labCompleted = false;
 
     const labDoc = await Lab.findOne({ labId: req.params.id }).lean();
 
@@ -574,28 +569,17 @@ export const runCommand = async (req, res, next) => {
       const alreadyCompleted = new Set(freshUserLab.completedObjectives || []);
       const objectives = labDoc.objectives || [];
       const totalObjectives = objectives.length;
-      const newlyCompletedIds = [];
 
-      // ── Match ALL objectives that this command satisfies (not just the first) ──
+      // Match ALL objectives this command satisfies (not just the first).
       for (let i = 0; i < totalObjectives; i++) {
         if (alreadyCompleted.has(i)) continue;
-
-        // Prefer objectiveCommands[i] (keyword array) over commands[i] (exact)
         const triggers = labDoc.objectiveCommands?.[i];
-
         if (triggers && triggers.length > 0) {
-          // Contains match — any trigger keyword found anywhere in the typed command
-          const matched = triggers.some((trigger) =>
-            normalizedInput.includes(normalize(trigger))
-          );
-          if (matched) {
+          if (triggers.some((trigger) => normalizedInput.includes(normalize(trigger)))) {
             alreadyCompleted.add(i);
             newlyCompletedIds.push(i);
-            console.log(`[ObjectiveValidator] ✅ obj[${i}] matched via objectiveCommands: "${normalizedInput}"`);
-            // No break — continue checking remaining objectives
           }
         } else if (labDoc.commands?.[i]) {
-          // Fallback: exact match against lab.commands[i]
           const expected = normalize(
             typeof labDoc.commands[i] === 'string'
               ? labDoc.commands[i]
@@ -604,57 +588,64 @@ export const runCommand = async (req, res, next) => {
           if (expected && normalizedInput === expected) {
             alreadyCompleted.add(i);
             newlyCompletedIds.push(i);
-            console.log(`[ObjectiveValidator] ✅ obj[${i}] matched via commands exact: "${normalizedInput}"`);
-            // No break — continue checking remaining objectives
           }
         }
       }
 
+      completedObjectives = Array.from(alreadyCompleted);
+
       if (newlyCompletedIds.length > 0) {
-        const completedArray = Array.from(alreadyCompleted);
-        const score = totalObjectives > 0
-          ? Math.round((completedArray.length / totalObjectives) * 100)
+        score = totalObjectives > 0
+          ? Math.round((completedObjectives.length / totalObjectives) * 100)
           : 0;
-        const progress = score;
+        progress = score;
 
-        console.log(`[ObjectiveValidator] Score=${score}% (${completedArray.length}/${totalObjectives}) — newly completed: [${newlyCompletedIds.join(',')}]`);
-
-        const updates = {
-          completedObjectives: completedArray,
-          progress,
-          score,
-          lastActivity: new Date(),
-        };
+        const updates = { completedObjectives, progress, score, lastActivity: new Date() };
         if (progress >= 100) {
           updates.status = 'completed';
           updates.completedAt = new Date();
+          labCompleted = true;
         }
-
         await UserLab.findByIdAndUpdate(userLab._id, { $set: updates });
+      }
+    }
 
-        const ssePayload = { progress, score, objectiveId: newlyCompletedIds[0], completedObjectives: completedArray };
-        console.log(`[SSEEmitter] progress:`, JSON.stringify(ssePayload));
-        emitLabEvent(req.params.id, 'progress', ssePayload);
+    // ── Respond with EVERYTHING the UI needs (no SSE dependency) ──────────────
+    res.json({
+      success: true,
+      data: {
+        entry,
+        prompt: afterPrompt,
+        progress,
+        score,
+        completedObjectives,
+        newlyCompleted: newlyCompletedIds,
+        labCompleted,
+      },
+    });
 
-        // Emit objective_complete for each newly completed objective
-        for (const objId of newlyCompletedIds) {
-          const objName = typeof objectives[objId] === 'string'
-            ? objectives[objId]
-            : `Objective ${objId + 1}`;
-          emitLabEvent(req.params.id, 'objective_complete', {
-            objectiveId: objId,
-            name: objName,
-            score,
-          });
-        }
+    // ── SSE (best-effort, for other open tabs / real-time nicety) ─────────────
+    emitLabEvent(req.params.id, "terminal_output", {
+      device: entry.device,
+      command: entry.command,
+      isError: entry.isError,
+    });
 
-        if (progress >= 100) {
-          emitLabEvent(req.params.id, 'lab_complete', {
-            score,
-            completedObjectives: completedArray,
-            unlockedAchievements: [],
-          });
-        }
+    if (newlyCompletedIds.length > 0 && labDoc) {
+      const objectives = labDoc.objectives || [];
+      emitLabEvent(req.params.id, 'progress', {
+        progress, score, objectiveId: newlyCompletedIds[0], completedObjectives,
+      });
+      for (const objId of newlyCompletedIds) {
+        const objName = typeof objectives[objId] === 'string'
+          ? objectives[objId]
+          : `Objective ${objId + 1}`;
+        emitLabEvent(req.params.id, 'objective_complete', { objectiveId: objId, name: objName, score });
+      }
+      if (labCompleted) {
+        emitLabEvent(req.params.id, 'lab_complete', {
+          score, completedObjectives, unlockedAchievements: [],
+        });
       }
     }
     // ── End Objective Validation ─────────────────────────────────────────────

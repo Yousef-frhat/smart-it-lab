@@ -15,7 +15,7 @@ import {
 import {
   Network, CheckCircle2, Terminal, ArrowLeft,
   Loader2, PlayCircle, Server, Laptop, Cloud,
-  Square, StopCircle, XCircle, Send
+  Square, StopCircle, XCircle, Send, ZoomIn, ZoomOut, RotateCcw
 } from "lucide-react";
 import {
   getLab as fetchLab,
@@ -26,6 +26,7 @@ import {
   getObjectives as apiGetObjectives,
   Lab,
   TerminalEntry,
+  CommandResult,
 } from "@/app/services/lab-api";
 import { useLabEvents } from "@/app/hooks/useLabEvents";
 import { toast } from "sonner";
@@ -45,8 +46,33 @@ export default function LabInterface() {
   const [showScoreModal, setShowScoreModal] = useState(false);
   const [submittedScore, setSubmittedScore] = useState(0);
   const [currentPrompt, setCurrentPrompt] = useState<string>("");
+  const [topoZoom, setTopoZoom] = useState(1);
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const isExecuting = useRef(false);
+  // Dedupe toasts across the HTTP response and SSE so they never double-fire
+  const toastedObjRef = useRef<Set<number>>(new Set());
+  const toastedCompleteRef = useRef(false);
+
+  // Apply the authoritative result returned by the terminal command HTTP call.
+  // This is the reliable path (works in production even without SSE).
+  const applyCommandResult = (res: CommandResult) => {
+    setCompletedObjectiveIndices(res.completedObjectives ?? []);
+    if (!isSubmitted) {
+      setLab((prev) =>
+        prev ? { ...prev, progress: res.progress ?? prev.progress, score: res.score ?? prev.score } : prev
+      );
+    }
+    for (const idx of res.newlyCompleted ?? []) {
+      if (toastedObjRef.current.has(idx)) continue;
+      toastedObjRef.current.add(idx);
+      const name = lab?.objectives[idx] ?? `Objective ${idx + 1}`;
+      toast.success(`✅ Objective complete: ${name}`);
+    }
+    if (res.labCompleted && !toastedCompleteRef.current && !isSubmitted) {
+      toastedCompleteRef.current = true;
+      toast.success(`🎉 Lab complete! Score: ${res.score}%`, { duration: 5000 });
+    }
+  };
 
   // SSE real-time events
   const { lastEvent } = useLabEvents(lab?.status === 'running' ? (id ?? null) : null);
@@ -116,10 +142,12 @@ export default function LabInterface() {
 
     if (lastEvent.type === 'objective_complete') {
       const { objectiveId, name } = lastEvent.data;
-      toast.success(`✅ Objective complete: ${String(name || objectiveId)}`);
+      const idx = typeof objectiveId === 'number' ? objectiveId : parseInt(String(objectiveId), 10);
+      if (!Number.isNaN(idx) && !toastedObjRef.current.has(idx)) {
+        toastedObjRef.current.add(idx);
+        toast.success(`✅ Objective complete: ${String(name || objectiveId)}`);
+      }
       setCompletedObjectiveIndices((prev) => {
-        const raw = objectiveId;
-        const idx = typeof raw === 'number' ? raw : parseInt(String(raw), 10);
         return prev.includes(idx) ? prev : [...prev, idx];
       });
     }
@@ -139,7 +167,8 @@ export default function LabInterface() {
       // authoritative result — suppress this SSE toast to avoid showing a
       // different number (the backend may have computed 100% from objective
       // validation while the sidebar shows the objectives-based score).
-      if (!isSubmitted) {
+      if (!isSubmitted && !toastedCompleteRef.current) {
+        toastedCompleteRef.current = true;
         toast.success(`🎉 Lab complete! Score: ${score}%`, { duration: 5000 });
       }
     }
@@ -170,6 +199,11 @@ export default function LabInterface() {
     try {
       const updatedLab = await apiStartLab(id);
       setLab(updatedLab);
+      // Fresh boot: clear local terminal + objective/toast tracking
+      setTerminalHistory([]);
+      setCompletedObjectiveIndices([]);
+      toastedObjRef.current = new Set();
+      toastedCompleteRef.current = false;
       toast.success("Lab environment started successfully!");
     } catch (error: unknown) {
       const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -200,11 +234,12 @@ export default function LabInterface() {
     isExecuting.current = true;
 
     try {
-      const { entry, nextPrompt } = await apiExecuteCommand(id, commandInput, currentDevice?.name ?? selectedDevice);
-      setTerminalHistory(prev => [...prev, entry]);
-      setCurrentPrompt(nextPrompt);
+      const res = await apiExecuteCommand(id, commandInput, currentDevice?.name ?? selectedDevice);
+      setTerminalHistory(prev => [...prev, res.entry]);
+      setCurrentPrompt(res.nextPrompt);
       setCommandInput("");
-      // Score and objectives update via SSE progress events only
+      // Apply objectives/score from the HTTP response directly (no SSE needed).
+      applyCommandResult(res);
     } catch (error: unknown) {
       const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "";
       const isInstanceError =
@@ -284,10 +319,11 @@ export default function LabInterface() {
     // Set the command in the input (instant visual feedback) and execute immediately
     setCommandInput(cmd);
     try {
-      const { entry, nextPrompt } = await apiExecuteCommand(id, cmd, currentDevice?.name ?? selectedDevice);
-      setTerminalHistory(prev => [...prev, entry]);
-      setCurrentPrompt(nextPrompt);
+      const res = await apiExecuteCommand(id, cmd, currentDevice?.name ?? selectedDevice);
+      setTerminalHistory(prev => [...prev, res.entry]);
+      setCurrentPrompt(res.nextPrompt);
       setCommandInput("");
+      applyCommandResult(res);
     } catch (error: unknown) {
       const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "";
       const isInstanceError =
@@ -556,38 +592,36 @@ export default function LabInterface() {
                 })}
               </div>
             </div>
-
-            {lab.commands && lab.commands.length > 0 && (
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="text-sm">Useful Commands</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {lab.commands.map((cmd, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        disabled={lab.status !== 'running'}
-                        onClick={() => handleRunUsefulCommand(cmd)}
-                        className="w-full text-left text-xs text-muted-foreground font-mono bg-background p-2 rounded hover:bg-muted hover:text-accent hover:border-[#00FF41]/30 border border-transparent transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                      >
-                        {cmd}
-                      </button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
 
         {/* Center Panel - Topology & Terminal */}
         <div className="flex-1 flex flex-col lg:overflow-hidden">
           {/* Network Topology */}
-          <div className="h-72 lg:h-1/2 border-b border-border bg-background p-6 overflow-auto">
-            <h3 className="text-sm font-semibold mb-4">Network Topology</h3>
-            <div className="relative min-h-[400px]">
+          <div className="h-72 lg:h-1/2 shrink-0 border-b border-border bg-background p-4 sm:p-6 overflow-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold">Network Topology</h3>
+              <div className="flex items-center gap-1">
+                <Button size="icon" variant="outline" className="h-7 w-7 border-border" title="Zoom out"
+                  onClick={() => setTopoZoom((z) => Math.max(0.4, +(z - 0.2).toFixed(2)))}>
+                  <ZoomOut className="w-4 h-4" />
+                </Button>
+                <span className="text-xs font-mono text-muted-foreground w-11 text-center">{Math.round(topoZoom * 100)}%</span>
+                <Button size="icon" variant="outline" className="h-7 w-7 border-border" title="Zoom in"
+                  onClick={() => setTopoZoom((z) => Math.min(2, +(z + 0.2).toFixed(2)))}>
+                  <ZoomIn className="w-4 h-4" />
+                </Button>
+                <Button size="icon" variant="outline" className="h-7 w-7 border-border" title="Reset zoom"
+                  onClick={() => setTopoZoom(1)}>
+                  <RotateCcw className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+            <div style={{ width: 820 * topoZoom, height: 600 * topoZoom }}>
+              <div
+                className="relative"
+                style={{ width: 820, height: 600, transform: `scale(${topoZoom})`, transformOrigin: "0 0" }}
+              >
               {/* Render connections */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none">
                 {lab.topology.map(node =>
@@ -643,11 +677,12 @@ export default function LabInterface() {
                   />
                 </div>
               ))}
+              </div>
             </div>
           </div>
 
           {/* Terminal */}
-          <div className="h-80 lg:h-1/2 bg-black flex flex-col">
+          <div className="h-80 lg:h-auto lg:flex-1 lg:min-h-0 bg-black flex flex-col">
             <div className="flex items-center gap-2 px-4 py-2 bg-[#1E293B] border-b border-[#334155]">
               <Terminal className="w-4 h-4 text-[#00FF41]" />
               <span className="text-sm font-mono">Web CLI Terminal - {currentDevice?.name || 'Select Device'}</span>
@@ -697,6 +732,26 @@ export default function LabInterface() {
               />
             </form>
           </div>
+
+          {/* Useful Commands — quick-run strip under the terminal */}
+          {lab.commands && lab.commands.length > 0 && (
+            <div className="shrink-0 border-t border-border bg-card px-3 py-2">
+              <div className="flex items-center gap-2 overflow-x-auto">
+                <span className="text-xs text-muted-foreground font-mono shrink-0">Useful:</span>
+                {lab.commands.map((cmd, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    disabled={lab.status !== 'running'}
+                    onClick={() => handleRunUsefulCommand(cmd)}
+                    className="shrink-0 whitespace-nowrap text-xs font-mono text-muted-foreground bg-background px-2.5 py-1 rounded border border-border hover:text-accent hover:border-accent/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {cmd}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Panel - Evaluation & Feedback */}
