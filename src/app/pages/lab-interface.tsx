@@ -381,7 +381,7 @@ export default function LabInterface() {
   const canSubmit = completedObjectives >= 1 && !isSubmitted;
 
   return (
-    <div className="h-screen bg-background flex flex-col">
+    <div className="min-h-screen lg:h-screen bg-background flex flex-col">
       {/* Score Modal */}
       <Dialog open={showScoreModal} onOpenChange={setShowScoreModal}>
         <DialogContent className="bg-card border-border text-foreground max-w-md">
@@ -439,7 +439,7 @@ export default function LabInterface() {
         </DialogContent>
       </Dialog>
       {/* Top Bar */}
-      <header className="h-16 border-b border-border bg-background flex items-center justify-between px-6">
+      <header className="min-h-16 border-b border-border bg-background flex flex-wrap items-center justify-between gap-2 px-4 lg:px-6 py-2">
         <div className="flex items-center gap-4">
           <Link to="/dashboard">
             <Button variant="ghost" size="sm" className="hover:bg-muted">
@@ -496,9 +496,9 @@ export default function LabInterface() {
       </header>
 
       {/* Main Layout */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden">
         {/* Left Panel - Instructions */}
-        <div className="w-80 border-r border-border bg-background overflow-y-auto">
+        <div className="w-full lg:w-80 shrink-0 border-b lg:border-b-0 lg:border-r border-border bg-background lg:overflow-y-auto">
           <div className="p-6 space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-2">Lab Instructions</h3>
@@ -583,9 +583,9 @@ export default function LabInterface() {
         </div>
 
         {/* Center Panel - Topology & Terminal */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col lg:overflow-hidden">
           {/* Network Topology */}
-          <div className="h-1/2 border-b border-border bg-background p-6 overflow-auto">
+          <div className="h-72 lg:h-1/2 border-b border-border bg-background p-6 overflow-auto">
             <h3 className="text-sm font-semibold mb-4">Network Topology</h3>
             <div className="relative min-h-[400px]">
               {/* Render connections */}
@@ -647,7 +647,7 @@ export default function LabInterface() {
           </div>
 
           {/* Terminal */}
-          <div className="h-1/2 bg-black flex flex-col">
+          <div className="h-80 lg:h-1/2 bg-black flex flex-col">
             <div className="flex items-center gap-2 px-4 py-2 bg-[#1E293B] border-b border-[#334155]">
               <Terminal className="w-4 h-4 text-[#00FF41]" />
               <span className="text-sm font-mono">Web CLI Terminal - {currentDevice?.name || 'Select Device'}</span>
@@ -700,7 +700,7 @@ export default function LabInterface() {
         </div>
 
         {/* Right Panel - Evaluation & Feedback */}
-        <div className="w-80 border-l border-border bg-background overflow-y-auto">
+        <div className="w-full lg:w-80 shrink-0 border-t lg:border-t-0 lg:border-l border-border bg-background lg:overflow-y-auto">
           <div className="p-6 space-y-6">
 
             {/* Live Validation feed */}
