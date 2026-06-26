@@ -9,6 +9,7 @@ import { Check, Network, Lock, Shield, CreditCard, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/app/components/ui/dialog";
 import { useAuth } from "@/app/contexts/auth-context";
 import { toast } from "sonner";
+import { BackgroundWatermark } from "@/app/components/background-watermark";
 
 type PlanType = 'free' | 'pro' | 'enterprise';
 
@@ -182,22 +183,7 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Background watermark logo */}
-      <div
-        className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center"
-        aria-hidden="true"
-      >
-        <img
-          src="/logo.png"
-          alt=""
-          className="w-[600px] max-w-[80vw] opacity-[0.04] hidden dark:block"
-        />
-        <img
-          src="/logo-light.png"
-          alt=""
-          className="w-[600px] max-w-[80vw] opacity-[0.06] block dark:hidden"
-        />
-      </div>
+      <BackgroundWatermark />
       {/* Header */}
       <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">

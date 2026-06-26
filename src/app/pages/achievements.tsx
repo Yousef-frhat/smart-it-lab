@@ -1,16 +1,19 @@
 import { useState, useEffect, ReactElement } from "react";
-import { useLocation } from "react-router";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Progress } from "@/app/components/ui/progress";
 import { 
   Trophy, Award, Target, Zap, Shield, Star, Crown, 
-  CheckCircle, Lock, TrendingUp, Calendar, Flame, Loader2
+  CheckCircle, Lock, TrendingUp, Calendar, Flame
 } from "lucide-react";
 import api from "@/app/services/api";
 import { useLabs } from "@/app/contexts/labs-context";
 import { useLanguage } from "@/app/contexts/language-context";
 import { toast } from "sonner";
+import { LoadingSpinner } from "@/app/components/loading-spinner";
+import { PageHeader } from "@/app/components/page-header";
+import { StatCard } from "@/app/components/stat-card";
+import { useRefreshOnNavigate } from "@/app/hooks/useRefreshOnNavigate";
 
 interface Achievement {
   id: string;
@@ -199,16 +202,12 @@ function applyLocalProgress(
 
 export default function Achievements() {
   const { labs, isLoading: labsLoading, refresh } = useLabs();
-  const location = useLocation();
   const { t } = useLanguage();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [totalPoints, setTotalPoints] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Re-fetch achievements (and trigger labs refresh) on navigation
-  useEffect(() => {
-    refresh();
-  }, [location.key]); // eslint-disable-line react-hooks/exhaustive-deps
+  useRefreshOnNavigate(refresh);
 
   useEffect(() => {
     setIsLoading(true);
@@ -234,11 +233,7 @@ export default function Achievements() {
 
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   const unlockedAchievements = achievements.filter(a => a.unlocked);
@@ -251,64 +246,36 @@ export default function Achievements() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold mb-2">{t('achievementsTitle')}</h1>
-        <p className="text-muted-foreground">{t('achievementsSubtitle')}</p>
-      </div>
+      <PageHeader title={t('achievementsTitle')} subtitle={t('achievementsSubtitle')} />
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-[#FFD700]/20 to-[#F59E0B]/20 border-[#FFD700]">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{t('totalPoints')}</p>
-                <p className="text-3xl font-bold font-mono text-[#FFD700]">{totalPoints}</p>
-              </div>
-              <Trophy className="w-10 h-10 text-[#FFD700]" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-border">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{t('unlocked')}</p>
-                <p className="text-3xl font-bold font-mono text-accent">{unlockedAchievements.length}</p>
-                <p className="text-xs text-muted-foreground">/ {achievements.length}</p>
-              </div>
-              <CheckCircle className="w-10 h-10 text-accent" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-border">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{t('completion')}</p>
-                <p className="text-3xl font-bold font-mono text-primary">{completionRate}%</p>
-              </div>
-              <TrendingUp className="w-10 h-10 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-border">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{t('inProgress')}</p>
-                <p className="text-3xl font-bold font-mono text-[#F59E0B]">
-                  {lockedAchievements.filter(a => (a.progress || 0) > 0).length}
-                </p>
-              </div>
-              <Target className="w-10 h-10 text-[#F59E0B]" />
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          label={t('totalPoints')}
+          value={totalPoints.toString()}
+          icon={<Trophy className="w-10 h-10 text-[#FFD700]" />}
+          cardClassName="bg-gradient-to-br from-[#FFD700]/20 to-[#F59E0B]/20 border-[#FFD700]"
+          valueClassName="text-3xl text-[#FFD700]"
+        />
+        <StatCard
+          label={t('unlocked')}
+          value={unlockedAchievements.length.toString()}
+          icon={<CheckCircle className="w-10 h-10 text-accent" />}
+          valueClassName="text-3xl text-accent"
+          subtext={`/ ${achievements.length}`}
+        />
+        <StatCard
+          label={t('completion')}
+          value={`${completionRate}%`}
+          icon={<TrendingUp className="w-10 h-10 text-primary" />}
+          valueClassName="text-3xl text-primary"
+        />
+        <StatCard
+          label={t('inProgress')}
+          value={lockedAchievements.filter(a => (a.progress || 0) > 0).length.toString()}
+          icon={<Target className="w-10 h-10 text-[#F59E0B]" />}
+          valueClassName="text-3xl text-[#F59E0B]"
+        />
       </div>
 
       {/* Recent Unlocks */}

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router";
+import { useState } from "react";
+import { Link } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
@@ -7,7 +7,7 @@ import { Input } from "@/app/components/ui/input";
 import { Progress } from "@/app/components/ui/progress";
 import {
   Play, CircleDot, Search,
-  Clock, Award, BookOpen, CheckCircle, Circle, Loader2,
+  Clock, Award, BookOpen, CheckCircle, Circle,
 } from "lucide-react";
 import { useLabs } from "@/app/contexts/labs-context";
 import { useLanguage } from "@/app/contexts/language-context";
@@ -18,9 +18,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
+import { LoadingSpinner } from "@/app/components/loading-spinner";
+import { PageHeader } from "@/app/components/page-header";
+import { StatCard } from "@/app/components/stat-card";
+import { getDifficultyColor } from "@/app/utils/color-helpers";
+import { useRefreshOnNavigate } from "@/app/hooks/useRefreshOnNavigate";
 
 export default function MyLabs() {
-  const location = useLocation();
   const { labs, isLoading, avgScore, completedCount, inProgressCount, refresh } = useLabs();
   const { t } = useLanguage();
 
@@ -29,10 +33,7 @@ export default function MyLabs() {
   const [difficultyFilter, setDifficultyFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
 
-  // Re-fetch every time the user navigates to this page (e.g. returning from a lab)
-  useEffect(() => {
-    refresh();
-  }, [location.key]); // eslint-disable-line react-hooks/exhaustive-deps
+  useRefreshOnNavigate(refresh);
 
   // Derived filtered list
   const filteredLabs = labs.filter((lab) => {
@@ -51,15 +52,6 @@ export default function MyLabs() {
 
   const categories = Array.from(new Set(labs.map((lab) => lab.category)));
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'beginner': return 'bg-[#00FF41] text-[#0F172A]';
-      case 'intermediate': return 'bg-[#F59E0B] text-[#0F172A]';
-      case 'advanced': return 'bg-[#EF4444] text-white';
-      default: return 'bg-[#94A3B8] text-[#0F172A]';
-    }
-  };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed': return <CheckCircle className="w-5 h-5 text-accent" />;
@@ -70,70 +62,38 @@ export default function MyLabs() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold mb-2">{t('labsTitle')}</h1>
-        <p className="text-muted-foreground">{t('labsSubtitle')}</p>
-      </div>
+      <PageHeader title={t('labsTitle')} subtitle={t('labsSubtitle')} />
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-card border-border">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{t('totalLabs')}</p>
-                <p className="text-2xl font-bold font-mono">{labs.length}</p>
-              </div>
-              <BookOpen className="w-8 h-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-border">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{t('completed')}</p>
-                <p className="text-2xl font-bold font-mono text-accent">{completedCount}</p>
-              </div>
-              <CheckCircle className="w-8 h-8 text-accent" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-border">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{t('inProgress')}</p>
-                <p className="text-2xl font-bold font-mono text-primary">{inProgressCount}</p>
-              </div>
-              <CircleDot className="w-8 h-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-border">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{t('avgScore')}</p>
-                <p className="text-2xl font-bold font-mono text-[#F59E0B]">{avgScore}%</p>
-              </div>
-              <Award className="w-8 h-8 text-[#F59E0B]" />
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          label={t('totalLabs')}
+          value={labs.length.toString()}
+          icon={<BookOpen className="w-8 h-8 text-primary" />}
+        />
+        <StatCard
+          label={t('completed')}
+          value={completedCount.toString()}
+          icon={<CheckCircle className="w-8 h-8 text-accent" />}
+          valueClassName="text-accent"
+        />
+        <StatCard
+          label={t('inProgress')}
+          value={inProgressCount.toString()}
+          icon={<CircleDot className="w-8 h-8 text-primary" />}
+          valueClassName="text-primary"
+        />
+        <StatCard
+          label={t('avgScore')}
+          value={`${avgScore}%`}
+          icon={<Award className="w-8 h-8 text-[#F59E0B]" />}
+          valueClassName="text-[#F59E0B]"
+        />
       </div>
 
       {/* Filters */}

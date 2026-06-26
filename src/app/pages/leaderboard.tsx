@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "react-router";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
 import { 
   Trophy, TrendingUp, TrendingDown, Minus, Crown, Medal, 
-  Award, Target, Flame, Star, Loader2
+  Award, Target, Flame, Star
 } from "lucide-react";
 import { useAuth } from "@/app/contexts/auth-context";
 import { useLabs } from "@/app/contexts/labs-context";
@@ -16,6 +15,9 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
+import { LoadingSpinner } from "@/app/components/loading-spinner";
+import { PageHeader } from "@/app/components/page-header";
+import { useRefreshOnNavigate } from "@/app/hooks/useRefreshOnNavigate";
 
 interface LeaderboardEntry {
   rank: number;
@@ -33,15 +35,11 @@ interface LeaderboardEntry {
 
 export default function Leaderboard() {
   const { user } = useAuth();
-  const location = useLocation();
   const { weeklyLeaderboard, monthlyLeaderboard, isLoading, refresh } = useLabs();
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("weekly");
 
-  // Re-fetch on navigation (e.g. returning from a lab)
-  useEffect(() => {
-    refresh();
-  }, [location.key]); // eslint-disable-line react-hooks/exhaustive-deps
+  useRefreshOnNavigate(refresh);
 
   const getRankIcon = (rank: number) => {
     if (rank === 1) return <Crown className="w-6 h-6 text-[#FFD700]" />;
@@ -142,11 +140,7 @@ export default function Leaderboard() {
   );
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   const currentBoard = activeTab === 'weekly' ? weeklyLeaderboard : monthlyLeaderboard;
@@ -154,10 +148,7 @@ export default function Leaderboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">{t('leaderboardTitle')}</h1>
-        <p className="text-muted-foreground">{t('leaderboardSubtitle')}</p>
-      </div>
+      <PageHeader title={t('leaderboardTitle')} subtitle={t('leaderboardSubtitle')} />
 
       {currentUserEntry && (
         <Card className="bg-gradient-to-r from-[#3B82F6]/20 to-[#00FF41]/20 border-primary">

@@ -13,6 +13,9 @@ import {
   DialogTitle,
 } from "@/app/components/ui/dialog";
 import { Network, Github, Mail, Loader2, CheckCircle2 } from "lucide-react";
+import { BackgroundWatermark } from "@/app/components/background-watermark";
+import { SocialLoginButtons } from "@/app/components/social-login-buttons";
+import { getApiErrorMessage } from "@/app/utils/api-error";
 import { useAuth } from "@/app/contexts/auth-context";
 import api from "@/app/services/api";
 import { toast } from "sonner";
@@ -42,8 +45,7 @@ export default function AuthPage() {
       toast.success("Welcome back!");
       navigate("/dashboard");
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast.error(msg || "Login failed. Please try again.");
+      toast.error(getApiErrorMessage(err, "Login failed. Please try again."));
     } finally {
       setIsLoading(false);
     }
@@ -66,8 +68,7 @@ export default function AuthPage() {
       await register(name, email, password);
       setShowVerifyBanner(true);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast.error(msg || "Registration failed. Please try again.");
+      toast.error(getApiErrorMessage(err, "Registration failed. Please try again."));
     } finally {
       setIsLoading(false);
     }
@@ -86,8 +87,7 @@ export default function AuthPage() {
       await api.post("/auth/forgot-password", { email: forgotEmail });
       setForgotSent(true);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast.error(msg || "Something went wrong. Try again later.");
+      toast.error(getApiErrorMessage(err, "Something went wrong. Try again later."));
     } finally {
       setForgotLoading(false);
     }
@@ -95,22 +95,7 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
-      {/* Background watermark logo */}
-      <div
-        className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center"
-        aria-hidden="true"
-      >
-        <img
-          src="/logo.png"
-          alt=""
-          className="w-[500px] max-w-[80vw] opacity-[0.04] hidden dark:block"
-        />
-        <img
-          src="/logo-light.png"
-          alt=""
-          className="w-[500px] max-w-[80vw] opacity-[0.06] block dark:hidden"
-        />
-      </div>
+      <BackgroundWatermark size="w-[500px]" />
       <div className="w-full max-w-md space-y-6">
         {/* Logo */}
         <div className="text-center">
@@ -172,23 +157,7 @@ export default function AuthPage() {
                   </Button>
                 </form>
 
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center text-xs">
-                    <span className="bg-card px-2 text-muted-foreground">OR CONTINUE WITH</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <Button type="button" variant="outline" className="bg-background border-border hover:bg-muted" onClick={() => handleSocialLogin("github")} disabled={isLoading}>
-                    <Github className="w-4 h-4 mr-2" /> GitHub
-                  </Button>
-                  <Button type="button" variant="outline" className="bg-background border-border hover:bg-muted" onClick={() => handleSocialLogin("google")} disabled={isLoading}>
-                    <Mail className="w-4 h-4 mr-2" /> Google
-                  </Button>
-                </div>
+                <SocialLoginButtons onSocialLogin={handleSocialLogin} disabled={isLoading} />
               </TabsContent>
 
               <TabsContent value="register" className="space-y-4 mt-6">
@@ -214,23 +183,7 @@ export default function AuthPage() {
                   </Button>
                 </form>
 
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center text-xs">
-                    <span className="bg-card px-2 text-muted-foreground">OR CONTINUE WITH</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <Button type="button" variant="outline" className="bg-background border-border hover:bg-muted" onClick={() => handleSocialLogin("github")} disabled={isLoading}>
-                    <Github className="w-4 h-4 mr-2" /> GitHub
-                  </Button>
-                  <Button type="button" variant="outline" className="bg-background border-border hover:bg-muted" onClick={() => handleSocialLogin("google")} disabled={isLoading}>
-                    <Mail className="w-4 h-4 mr-2" /> Google
-                  </Button>
-                </div>
+                <SocialLoginButtons onSocialLogin={handleSocialLogin} disabled={isLoading} />
               </TabsContent>
             </Tabs>
           </CardContent>
