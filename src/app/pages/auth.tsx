@@ -94,12 +94,29 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
+      {/* Background watermark logo */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center"
+        aria-hidden="true"
+      >
+        <img
+          src="/logo.png"
+          alt=""
+          className="w-[500px] max-w-[80vw] opacity-[0.04] hidden dark:block"
+        />
+        <img
+          src="/logo-light.png"
+          alt=""
+          className="w-[500px] max-w-[80vw] opacity-[0.06] block dark:hidden"
+        />
+      </div>
       <div className="w-full max-w-md space-y-6">
         {/* Logo */}
         <div className="text-center">
           <Link to="/" className="inline-flex items-center gap-2 mb-2">
-            <Network className="w-8 h-8 text-[#00FF41]" />
+            <img src="/logo.png" alt="Smart IT Lab" className="w-8 h-8 hidden dark:block" />
+            <img src="/logo-light.png" alt="Smart IT Lab" className="w-8 h-8 block dark:hidden" />
             <span className="font-mono text-2xl tracking-tight">Smart IT Lab</span>
           </Link>
           <p className="text-muted-foreground text-sm">Master Enterprise Networking</p>

@@ -2,11 +2,13 @@ import { Link } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
-import { Network, Zap, Target, Github, Linkedin, Mail } from "lucide-react";
+import { Network, Zap, Target, Github, Linkedin, Mail, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/app/contexts/auth-context";
+import { useTheme } from "@/app/contexts/theme-context";
 
 export default function LandingPage() {
   const { isAuthenticated } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const features = [
     {
@@ -33,23 +35,40 @@ export default function LandingPage() {
   ];
 
   const team = [
-    { name: "Yousef Frhat", role: "DevOps Engineer", avatar: "YF" },
+    { name: "Yousef Frhat", role: "DevSecOps", avatar: "YF" },
     { name: "Yousef Khaled", role: "Full-Stack Developer", avatar: "YK" },
     { name: "Fathy Ibrahim", role: "Network Specialist", avatar: "FI" },
     { name: "El-Sayed El-Ghandour", role: "Security Expert", avatar: "EE" },
-    { name: "Seif Hamdy", role: "UI/UX Designer", avatar: "SH" },
+    { name: "Seif Hamdy", role: "Frontend Developer", avatar: "SH" },
     { name: "Ahmed Mahmoud", role: "Backend Developer", avatar: "AM" },
   ];
 
   const supervisor = { name: "Dr. Amina El-Mahalawi", role: "Project Supervisor", avatar: "AE" };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Background watermark logo */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center"
+        aria-hidden="true"
+      >
+        <img
+          src="/logo.png"
+          alt=""
+          className="w-[600px] max-w-[80vw] opacity-[0.04] hidden dark:block"
+        />
+        <img
+          src="/logo-light.png"
+          alt=""
+          className="w-[600px] max-w-[80vw] opacity-[0.06] block dark:hidden"
+        />
+      </div>
       {/* Header */}
       <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Network className="w-6 h-6 text-accent" />
+            <img src="/logo.png" alt="Smart IT Lab" className="w-7 h-7 hidden dark:block" />
+            <img src="/logo-light.png" alt="Smart IT Lab" className="w-7 h-7 block dark:hidden" />
             <span className="font-mono text-xl tracking-tight">Smart IT Lab</span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
@@ -61,11 +80,22 @@ export default function LandingPage() {
               <Link to="/auth" className="text-sm text-muted-foreground hover:text-accent transition-colors">Sign In</Link>
             )}
           </nav>
-          <Link to={isAuthenticated ? "/dashboard" : "/auth"}>
-            <Button className="bg-[#3B82F6] hover:bg-[#2563EB] text-white">
-              {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="text-muted-foreground hover:text-foreground"
+              title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </Button>
-          </Link>
+            <Link to={isAuthenticated ? "/dashboard" : "/auth"}>
+              <Button className="bg-[#3B82F6] hover:bg-[#2563EB] text-white">
+                {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 
