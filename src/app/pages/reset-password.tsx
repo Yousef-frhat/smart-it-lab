@@ -5,6 +5,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Network, Loader2, Lock } from "lucide-react";
 import api from "@/app/services/api";
+import { getErrorMessage } from "@/app/utils/get-error-message";
 import { toast } from "sonner";
 
 export default function ResetPassword() {
@@ -33,10 +34,8 @@ export default function ResetPassword() {
       await api.post("/auth/reset-password", { token, password });
       toast.success("Password has been reset! You can now log in.");
       setTimeout(() => navigate("/auth"), 1500);
-    } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || "Invalid or expired reset link"
-      );
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Invalid or expired reset link"));
     } finally {
       setIsLoading(false);
     }

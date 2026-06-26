@@ -22,7 +22,10 @@ export default function VerifyEmail() {
     api
       .post("/auth/verify-email", { token })
       .then(() => setStatus("success"))
-      .catch(() => setStatus("error"));
+      .catch((err) => {
+        console.warn("Email verification failed:", err);
+        setStatus("error");
+      });
   }, [token]);
 
   const handleResend = async () => {

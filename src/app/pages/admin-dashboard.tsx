@@ -12,6 +12,7 @@ import {
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useAuth } from "@/app/contexts/auth-context";
 import { useLanguage } from "@/app/contexts/language-context";
+import { getErrorMessage } from "@/app/utils/get-error-message";
 import {
   getUsers,
   getAdminStats,
@@ -65,10 +66,10 @@ export default function AdminDashboard() {
   const loadData = useCallback(async () => {
     try {
       const [usersResult, statsData, serversData, activityData] = await Promise.all([
-        getUsers().catch(() => ({ users: [], pagination: { page: 1, limit: 20, total: 0, pages: 1 } })),
-        getAdminStats().catch(() => stats),
-        getServers().catch(() => []),
-        getActivity().catch(() => []),
+        getUsers().catch((err) => { console.warn("Failed to load users:", err); return { users: [], pagination: { page: 1, limit: 20, total: 0, pages: 1 } }; }),
+        getAdminStats().catch((err) => { console.warn("Failed to load admin stats:", err); return stats; }),
+        getServers().catch((err) => { console.warn("Failed to load servers:", err); return []; }),
+        getActivity().catch((err) => { console.warn("Failed to load activity:", err); return []; }),
       ]);
       setUsers(usersResult.users);
       setPagination(usersResult.pagination);
@@ -94,8 +95,8 @@ export default function AdminDashboard() {
         ]);
         setServers(serversData);
         setStats(statsData);
-      } catch {
-        // Silent refresh failure
+      } catch (err) {
+        console.warn("Background admin data refresh failed:", err);
       }
     }, 10000);
 
@@ -112,8 +113,8 @@ export default function AdminDashboard() {
       await apiSuspendUser(userId);
       await loadData();
       toast.success("User status toggled successfully");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to update user status");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to update user status"));
     }
   };
 
@@ -126,8 +127,8 @@ export default function AdminDashboard() {
       toast.success("User deleted successfully");
       setDeleteDialogOpen(false);
       setSelectedUser(null);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to delete user");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Failed to delete user"));
     }
   };
 

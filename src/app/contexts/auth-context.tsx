@@ -50,8 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           applyTheme(u.settings?.theme === 'light' ? 'light' : 'dark');
         }
       })
-      .catch(() => {
-        // Token invalid / expired and refresh also failed
+      .catch((err) => {
+        console.warn("Session restore failed (token invalid/expired):", err);
         localStorage.removeItem('accessToken');
       })
       .finally(() => setIsLoading(false));

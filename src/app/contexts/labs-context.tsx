@@ -90,8 +90,8 @@ export function LabsProvider({ children }: { children: ReactNode }) {
       // Retroactive sync first — recalculates achievements + leaderboard from
       // existing UserLab records. Idempotent and safe to call on every refresh.
       // We await it so the subsequent fetches see the updated data.
-      await api.post('/labs/sync-stats').catch(() => {
-        // Non-critical — if it fails (e.g. network), continue with stale data
+      await api.post('/labs/sync-stats').catch((err) => {
+        console.warn("Non-critical: sync-stats failed, continuing with stale data:", err);
       });
 
       const [labsData, achRes, weeklyRes, monthlyRes] = await Promise.allSettled([

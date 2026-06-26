@@ -29,6 +29,7 @@ import {
   CommandResult,
 } from "@/app/services/lab-api";
 import { useLabEvents } from "@/app/hooks/useLabEvents";
+import { getErrorMessage } from "@/app/utils/get-error-message";
 import { toast } from "sonner";
 
 export default function LabInterface() {
@@ -105,8 +106,8 @@ export default function LabInterface() {
           .map((o) => o.index);
         setCompletedObjectiveIndices(completed);
       })
-      .catch(() => {
-        // Objectives might not be available yet
+      .catch((err) => {
+        console.warn("Failed to load objectives:", err);
       });
   }, [id, lab?.status]);
 
@@ -206,8 +207,7 @@ export default function LabInterface() {
       toastedCompleteRef.current = false;
       toast.success("Lab environment started successfully!");
     } catch (error: unknown) {
-      const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast.error(msg || "Failed to start lab");
+      toast.error(getErrorMessage(error, "Failed to start lab"));
     } finally {
       setIsProvisioning(false);
     }
@@ -221,8 +221,7 @@ export default function LabInterface() {
       setLab(updatedLab);
       toast.success("Lab stopped");
     } catch (error: unknown) {
-      const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast.error(msg || "Failed to stop lab");
+      toast.error(getErrorMessage(error, "Failed to stop lab"));
     }
   };
 
@@ -241,7 +240,7 @@ export default function LabInterface() {
       // Apply objectives/score from the HTTP response directly (no SSE needed).
       applyCommandResult(res);
     } catch (error: unknown) {
-      const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "";
+      const msg = getErrorMessage(error, "");
       const isInstanceError =
         msg.includes("No active lab instance") ||
         msg.includes("Lab instance not found") ||
@@ -276,7 +275,7 @@ export default function LabInterface() {
     } catch (error: unknown) {
       // If the backend has no active instance (lab not started server-side),
       // fall back to local-only mode — the score is still valid.
-      const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "";
+      const msg = getErrorMessage(error, "");
       const isInstanceError =
         msg.includes("No active lab instance") ||
         msg.includes("Lab instance not found") ||
@@ -325,7 +324,7 @@ export default function LabInterface() {
       setCommandInput("");
       applyCommandResult(res);
     } catch (error: unknown) {
-      const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "";
+      const msg = getErrorMessage(error, "");
       const isInstanceError =
         msg.includes("No active lab instance") ||
         msg.includes("Lab instance not found") ||
