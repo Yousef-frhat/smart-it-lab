@@ -7,7 +7,7 @@ import { Input } from "@/app/components/ui/input";
 import {
   Network, Users, Server, DollarSign, Activity,
   Trash2, Search, BarChart3, Settings, LogOut,
-  Clock, TrendingUp, Ban, UserCheck, Loader2
+  Clock, TrendingUp, Ban, UserCheck
 } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useAuth } from "@/app/contexts/auth-context";
@@ -25,6 +25,10 @@ import {
   Activity as ActivityType,
 } from "@/app/services/admin-api";
 import { toast } from "sonner";
+import { LoadingSpinner } from "@/app/components/loading-spinner";
+import { getApiErrorMessage } from "@/app/utils/api-error";
+import { getServerStatusColor, getUserStatusColor } from "@/app/utils/color-helpers";
+import { formatRelativeTime, formatUptime } from "@/app/utils/format-relative-time";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -112,8 +116,8 @@ export default function AdminDashboard() {
       await apiSuspendUser(userId);
       await loadData();
       toast.success("User status toggled successfully");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to update user status");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to update user status"));
     }
   };
 
@@ -126,8 +130,8 @@ export default function AdminDashboard() {
       toast.success("User deleted successfully");
       setDeleteDialogOpen(false);
       setSelectedUser(null);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to delete user");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to delete user"));
     }
   };
 
@@ -187,48 +191,15 @@ export default function AdminDashboard() {
     },
   ];
 
-  const getServerStatusColor = (status: string) => {
-    switch (status) {
-      case 'healthy': return 'text-accent bg-[#00FF41]/20';
-      case 'warning': return 'text-[#F59E0B] bg-[#F59E0B]/20';
-      case 'critical': return 'text-[#EF4444] bg-[#EF4444]/20';
-      case 'offline': return 'text-muted-foreground bg-[#94A3B8]/20';
-      default: return 'text-muted-foreground bg-[#94A3B8]/20';
-    }
-  };
-
-  const getUserStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'text-accent bg-[#00FF41]/20';
-      case 'inactive': return 'text-muted-foreground bg-[#94A3B8]/20';
-      case 'suspended': return 'text-[#EF4444] bg-[#EF4444]/20';
-      default: return 'text-muted-foreground bg-[#94A3B8]/20';
-    }
-  };
-
-  const formatUptime = (seconds: number) => {
-    const days = Math.floor(seconds / (24 * 60 * 60));
-    const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
-    return `${days}d ${hours}h`;
-  };
-
   const formatLastActive = (dateString: string) => {
     if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-
-    if (hours < 1) return 'Just now';
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
+    return formatRelativeTime(dateString);
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      <div className="min-h-screen bg-background">
+        <LoadingSpinner className="min-h-screen" />
       </div>
     );
   }

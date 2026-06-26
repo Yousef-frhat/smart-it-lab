@@ -6,11 +6,12 @@ import { Badge } from "@/app/components/ui/badge";
 import { Progress } from "@/app/components/ui/progress";
 import {
   Trophy, Clock, Play, CircleDot,
-  BookOpen, Award, Loader2, CheckCircle,
+  BookOpen, Award, CheckCircle,
 } from "lucide-react";
 import { useAuth } from "@/app/contexts/auth-context";
 import { useLabs } from "@/app/contexts/labs-context";
 import { useLanguage } from "@/app/contexts/language-context";
+import { LoadingSpinner } from "@/app/components/loading-spinner";
 
 export default function StudentDashboard() {
   const { user } = useAuth();
@@ -53,11 +54,7 @@ export default function StudentDashboard() {
   ];
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (

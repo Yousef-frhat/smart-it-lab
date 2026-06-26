@@ -7,7 +7,7 @@ import { Label } from "@/app/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import {
   User, Mail, Shield, Bell, Moon, Sun,
-  Save, Key, Trash2, Camera, Loader2, Monitor,
+  Save, Key, Trash2, Camera, Monitor,
 } from "lucide-react";
 import { useAuth } from "@/app/contexts/auth-context";
 import { useTheme } from "@/app/contexts/theme-context";
@@ -15,6 +15,10 @@ import type { Theme } from "@/app/contexts/theme-context";
 import api from "@/app/services/api";
 import { toast } from "sonner";
 import { Language } from '@/app/utils/translations';
+import { LoadingSpinner } from "@/app/components/loading-spinner";
+import { PageHeader } from "@/app/components/page-header";
+import { SettingsToggleRow } from "@/app/components/settings-toggle-row";
+import { getApiErrorMessage } from "@/app/utils/api-error";
 import {
   Tabs, TabsContent, TabsList, TabsTrigger,
 } from "@/app/components/ui/tabs";
@@ -88,8 +92,8 @@ export default function Settings() {
     try {
       await api.patch('/settings/profile', { name });
       toast.success("Profile updated successfully!");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to update profile");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to update profile"));
     } finally {
       setIsLoading(false);
     }
@@ -119,8 +123,8 @@ export default function Settings() {
         localStorage.removeItem('accessToken');
         window.location.href = '/auth';
       }, 2000);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to change password");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to change password"));
     } finally {
       setIsLoading(false);
     }
@@ -138,8 +142,8 @@ export default function Settings() {
         },
       });
       toast.success("Notification preferences saved!");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to save notifications");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to save notifications"));
     } finally {
       setIsLoading(false);
     }
@@ -151,8 +155,8 @@ export default function Settings() {
       await api.patch('/settings', { theme, language: currentLanguage });
       setTheme(theme as Theme);
       toast.success("Appearance settings saved!");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to save settings");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to save settings"));
     } finally {
       setIsLoading(false);
     }
@@ -169,8 +173,8 @@ export default function Settings() {
         },
       });
       toast.success("Privacy settings saved!");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to save privacy settings");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to save privacy settings"));
     } finally {
       setIsLoading(false);
     }
@@ -184,26 +188,18 @@ export default function Settings() {
         localStorage.removeItem('accessToken');
         window.location.href = '/';
       }, 1500);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to delete account");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to delete account"));
     }
   };
 
   if (isLoadingSettings) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold mb-2">Settings</h1>
-        <p className="text-muted-foreground">Manage your account preferences and privacy settings</p>
-      </div>
+      <PageHeader title="Settings" subtitle="Manage your account preferences and privacy settings" />
 
       {/* Settings Tabs */}
       <Card className="bg-card border-border">
@@ -403,61 +399,34 @@ export default function Settings() {
             {/* Notifications Tab */}
             <TabsContent value="notifications" className="space-y-6">
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <Bell className="w-5 h-5 text-primary mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold mb-1">Email Notifications</h4>
-                      <p className="text-sm text-muted-foreground">Receive notifications via email</p>
-                    </div>
-                  </div>
-                  <Switch 
-                    checked={emailNotifications}
-                    onCheckedChange={setEmailNotifications}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <Bell className="w-5 h-5 text-[#F59E0B] mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold mb-1">Lab Reminders</h4>
-                      <p className="text-sm text-muted-foreground">Get reminded about incomplete labs</p>
-                    </div>
-                  </div>
-                  <Switch 
-                    checked={labReminders}
-                    onCheckedChange={setLabReminders}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <Bell className="w-5 h-5 text-accent mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold mb-1">Achievement Alerts</h4>
-                      <p className="text-sm text-muted-foreground">Notifications when you unlock achievements</p>
-                    </div>
-                  </div>
-                  <Switch 
-                    checked={achievementAlerts}
-                    onCheckedChange={setAchievementAlerts}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <Mail className="w-5 h-5 text-[#8B5CF6] mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold mb-1">Weekly Progress Report</h4>
-                      <p className="text-sm text-muted-foreground">Receive a summary of your weekly progress</p>
-                    </div>
-                  </div>
-                  <Switch 
-                    checked={weeklyReport}
-                    onCheckedChange={setWeeklyReport}
-                  />
-                </div>
+                <SettingsToggleRow
+                  icon={<Bell className="w-5 h-5 text-primary mt-0.5" />}
+                  title="Email Notifications"
+                  description="Receive notifications via email"
+                  checked={emailNotifications}
+                  onCheckedChange={setEmailNotifications}
+                />
+                <SettingsToggleRow
+                  icon={<Bell className="w-5 h-5 text-[#F59E0B] mt-0.5" />}
+                  title="Lab Reminders"
+                  description="Get reminded about incomplete labs"
+                  checked={labReminders}
+                  onCheckedChange={setLabReminders}
+                />
+                <SettingsToggleRow
+                  icon={<Bell className="w-5 h-5 text-accent mt-0.5" />}
+                  title="Achievement Alerts"
+                  description="Notifications when you unlock achievements"
+                  checked={achievementAlerts}
+                  onCheckedChange={setAchievementAlerts}
+                />
+                <SettingsToggleRow
+                  icon={<Mail className="w-5 h-5 text-[#8B5CF6] mt-0.5" />}
+                  title="Weekly Progress Report"
+                  description="Receive a summary of your weekly progress"
+                  checked={weeklyReport}
+                  onCheckedChange={setWeeklyReport}
+                />
               </div>
 
               <div className="flex justify-end pt-4">
@@ -533,47 +502,27 @@ export default function Settings() {
             {/* Privacy Tab */}
             <TabsContent value="privacy" className="space-y-6">
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <User className="w-5 h-5 text-primary mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold mb-1">Public Profile</h4>
-                      <p className="text-sm text-muted-foreground">Make your profile visible to other users</p>
-                    </div>
-                  </div>
-                  <Switch 
-                    checked={profileVisible}
-                    onCheckedChange={setProfileVisible}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <User className="w-5 h-5 text-accent mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold mb-1">Show Progress</h4>
-                      <p className="text-sm text-muted-foreground">Display your lab progress to others</p>
-                    </div>
-                  </div>
-                  <Switch 
-                    checked={showProgress}
-                    onCheckedChange={setShowProgress}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-background border border-border rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <User className="w-5 h-5 text-[#F59E0B] mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold mb-1">Appear on Leaderboard</h4>
-                      <p className="text-sm text-muted-foreground">Show your ranking on the leaderboard</p>
-                    </div>
-                  </div>
-                  <Switch 
-                    checked={showLeaderboard}
-                    onCheckedChange={setShowLeaderboard}
-                  />
-                </div>
+                <SettingsToggleRow
+                  icon={<User className="w-5 h-5 text-primary mt-0.5" />}
+                  title="Public Profile"
+                  description="Make your profile visible to other users"
+                  checked={profileVisible}
+                  onCheckedChange={setProfileVisible}
+                />
+                <SettingsToggleRow
+                  icon={<User className="w-5 h-5 text-accent mt-0.5" />}
+                  title="Show Progress"
+                  description="Display your lab progress to others"
+                  checked={showProgress}
+                  onCheckedChange={setShowProgress}
+                />
+                <SettingsToggleRow
+                  icon={<User className="w-5 h-5 text-[#F59E0B] mt-0.5" />}
+                  title="Appear on Leaderboard"
+                  description="Show your ranking on the leaderboard"
+                  checked={showLeaderboard}
+                  onCheckedChange={setShowLeaderboard}
+                />
               </div>
 
               <div className="flex justify-end pt-4">
