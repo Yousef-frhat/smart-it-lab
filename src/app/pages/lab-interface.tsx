@@ -47,6 +47,8 @@ export default function LabInterface() {
   const [submittedScore, setSubmittedScore] = useState(0);
   const [currentPrompt, setCurrentPrompt] = useState<string>("");
   const [topoZoom, setTopoZoom] = useState(1);
+  const [terminalCollapsed, setTerminalCollapsed] = useState(false);
+  const [terminalFullscreen, setTerminalFullscreen] = useState(false);
   const terminalEndRef = useRef<HTMLDivElement>(null);
   const isExecuting = useRef(false);
   // Dedupe toasts across the HTTP response and SSE so they never double-fire
@@ -541,6 +543,41 @@ export default function LabInterface() {
               <p className="text-sm text-muted-foreground mb-4">
                 {lab.description}
               </p>
+
+              {/* What you'll learn from this lab */}
+              <div className="bg-muted/50 rounded-lg p-3 mb-4 space-y-2">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-primary">What You'll Learn</h4>
+                <ul className="text-xs text-muted-foreground space-y-1.5 leading-relaxed">
+                  {(lab as any).hints && (lab as any).hints.length > 0 ? (
+                    (lab as any).hints.map((hint: string, i: number) => (
+                      <li key={i} className="flex gap-2">
+                        <span className="text-accent shrink-0">✦</span>
+                        <span>{hint}</span>
+                      </li>
+                    ))
+                  ) : (
+                    <>
+                      <li className="flex gap-2">
+                        <span className="text-accent shrink-0">✦</span>
+                        <span>Understand real-world {lab.category} configuration scenarios.</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-accent shrink-0">✦</span>
+                        <span>Practice authentic Cisco IOS CLI commands used in production networks.</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-accent shrink-0">✦</span>
+                        <span>Build hands-on skills for CCNA certification preparation.</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-accent shrink-0">✦</span>
+                        <span>Verify your configuration with show commands and interpret the output.</span>
+                      </li>
+                    </>
+                  )}
+                </ul>
+              </div>
+
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
                 <span className="font-mono">{lab.category}</span>
                 <span>•</span>
@@ -598,7 +635,9 @@ export default function LabInterface() {
         {/* Center Panel - Topology & Terminal */}
         <div className="flex-1 flex flex-col lg:overflow-hidden">
           {/* Network Topology */}
-          <div className="h-72 lg:h-1/2 shrink-0 border-b border-border bg-background p-4 sm:p-6 overflow-auto">
+          <div className={`shrink-0 border-b border-border bg-background p-4 sm:p-6 overflow-auto transition-all duration-300 ${
+            terminalCollapsed ? 'flex-1' : 'h-72 lg:h-[55%]'
+          }`}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-semibold">Network Topology</h3>
               <div className="flex items-center gap-1">
@@ -682,15 +721,28 @@ export default function LabInterface() {
           </div>
 
           {/* Terminal */}
-          <div className="h-80 lg:h-auto lg:flex-1 lg:min-h-0 bg-black flex flex-col">
+          <div className={`bg-black flex flex-col transition-all duration-300 ${
+            terminalCollapsed ? 'h-10 min-h-[2.5rem] max-h-10 overflow-hidden' :
+            terminalFullscreen ? 'fixed inset-0 z-50 h-screen' :
+            'min-h-[200px] lg:min-h-0 resize-y overflow-auto'
+          }`} style={(!terminalCollapsed && !terminalFullscreen) ? { height: '40%' } : undefined}>
             <div className="flex items-center gap-2 px-4 py-2 bg-[#1E293B] border-b border-[#334155]">
               <Terminal className="w-4 h-4 text-[#00FF41]" />
               <span className="text-sm font-mono">Web CLI Terminal - {currentDevice?.name || 'Select Device'}</span>
               <div className="flex-1" />
-              <div className="flex gap-1">
-                <div className="w-3 h-3 rounded-full bg-[#EF4444]" />
-                <div className="w-3 h-3 rounded-full bg-[#F59E0B]" />
-                <div className="w-3 h-3 rounded-full bg-[#00FF41]" />
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  title={terminalCollapsed ? "Expand" : "Collapse"}
+                  className="w-3 h-3 rounded-full bg-[#EF4444] hover:brightness-125 transition-all"
+                  onClick={() => { setTerminalCollapsed((c) => !c); setTerminalFullscreen(false); }}
+                />
+                <button
+                  type="button"
+                  title={terminalFullscreen ? "Exit fullscreen" : "Fullscreen"}
+                  className="w-3 h-3 rounded-full bg-[#00FF41] hover:brightness-125 transition-all"
+                  onClick={() => { setTerminalFullscreen((f) => !f); setTerminalCollapsed(false); }}
+                />
               </div>
             </div>
 

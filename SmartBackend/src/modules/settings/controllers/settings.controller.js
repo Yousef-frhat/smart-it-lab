@@ -164,7 +164,14 @@ export const uploadAvatarHandler = async (req, res, next) => {
         .json({ success: false, message: "No image file uploaded." });
     }
 
-    const avatarUrl = req.file.path; // Cloudinary URL
+    // Cloudinary returns a full URL in req.file.path.
+    // Local disk storage returns a filesystem path — convert to a servable URL.
+    let avatarUrl = req.file.path;
+    if (!avatarUrl.startsWith("http")) {
+      // Build a full URL so the frontend can display it regardless of port/domain
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      avatarUrl = `${baseUrl}/uploads/avatars/${req.file.filename}`;
+    }
 
     await User.findByIdAndUpdate(req.user._id, { avatar: avatarUrl });
 

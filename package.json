@@ -104,5 +104,13 @@
     "overrides": {
       "vite": "6.3.5"
     }
-  }
+  },
+  "description": "## 🎓 Project Overview",
+  "main": "audit-labs.js",
+  "directories": {
+    "test": "tests"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

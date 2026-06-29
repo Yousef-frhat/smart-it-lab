@@ -89,7 +89,7 @@ export default function StudentDashboard() {
         {stats.map((stat, i) =>
           stat.href ? (
             <Link key={i} to={stat.href} className="block group">
-              <Card className="bg-card border-border group-hover:border-primary transition-colors cursor-pointer">
+              <Card className="bg-card border-border group-hover:border-primary transition-colors cursor-pointer card-hover">
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className={stat.color}>{stat.icon}</div>
@@ -100,7 +100,7 @@ export default function StudentDashboard() {
               </Card>
             </Link>
           ) : (
-            <Card key={i} className="bg-card border-border">
+            <Card key={i} className="bg-card border-border card-hover">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-2">
                   <div className={stat.color}>{stat.icon}</div>

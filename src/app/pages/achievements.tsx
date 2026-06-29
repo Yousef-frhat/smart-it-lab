@@ -380,7 +380,7 @@ export default function Achievements() {
                 {categoryAchievements.map((achievement) => (
                   <div 
                     key={achievement.id}
-                    className={`p-4 rounded-lg border ${
+                    className={`p-4 rounded-lg border card-hover ${
                       achievement.unlocked 
                         ? `${getTierClasses(achievement.tier).border} ${getTierClasses(achievement.tier).bg}` 
                         : 'border-border bg-background/50 opacity-60'

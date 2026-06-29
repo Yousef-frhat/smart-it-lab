@@ -74,6 +74,7 @@ const LABS = [
       ["show ip ospf database"],                                                    // 3: Troubleshoot area mismatches
       ["show running-config"],                                                      // 4: Implement authentication
     ],
+    hints: ["Use 'router ospf 1' then 'network' to add interfaces to OSPF", "Neighbors must share the same area ID and hello/dead timers", "Use 'show ip ospf neighbor' — state should be FULL", "Area mismatch causes neighbor stuck in INIT state", "Use 'ip ospf authentication message-digest' on both sides"],
   },
   {
     labId: "lab-2",
@@ -109,6 +110,7 @@ const LABS = [
       ["show ip route"],                                     // 3: Set up inter-VLAN routing
       ["show running-config"],                               // 4: Verify connectivity
     ],
+    hints: ["Use 'vlan 10' in global config to create VLAN, 'name Engineering' to name it", "Assign access ports with 'switchport mode access' and 'switchport access vlan 10'", "Configure trunk with 'switchport mode trunk' — allows all VLANs", "Inter-VLAN routing needs a Layer 3 device (router-on-a-stick or SVI)", "Verify with 'show vlan brief' and 'ping' between VLANs"],
   },
   {
     labId: "lab-3",
@@ -141,6 +143,7 @@ const LABS = [
       ["ping 192.168.1.10", "ping"],                         // 3: Test traffic filtering
       ["show running-config"],                               // 4: Verify security policy
     ],
+    hints: ["Standard ACLs filter by source IP only — use 'access-list 10 permit 192.168.1.0 0.0.0.255'", "Extended ACLs can filter by source, destination, and protocol/port", "Apply with 'ip access-group <name> in/out' on the interface", "Ping to test — if filtered, you'll get 'Destination unreachable'", "ACLs have implicit 'deny any' at end — add explicit permit if needed"],
   },
   {
     labId: "lab-4",
@@ -173,7 +176,7 @@ const LABS = [
       ["show ip bgp summary", "show ip bgp neighbors"],      // 3: Verify BGP neighbor states
       ["show running-config | section bgp", "show ip route"], // 4: Implement route filtering
     ],
-
+    hints: ["eBGP peers have different AS numbers — use 'neighbor x.x.x.x remote-as <different-AS>'", "iBGP peers share the same AS — use 'neighbor x.x.x.x remote-as <same-AS>'", "Advertise with 'network x.x.x.x mask y.y.y.y' — the route must exist in routing table", "BGP state should show 'Established' in show ip bgp summary", "Use route-maps and prefix-lists for filtering: 'neighbor x.x.x.x route-map FILTER in'"],
   },
   { labId:"lab-m1-1", name:"OSI & TCP/IP Model Identification", description:"Identify each OSI layer by function, map TCP/IP layers to OSI, and use show commands to identify layer-specific information on a Cisco device.", difficulty:"beginner", category:"Network Fundamentals", module:"Network Fundamentals", order:5, estimatedTime:"20 min", objectives:["Identify all 7 OSI layers and their primary functions","Map TCP/IP layers to corresponding OSI layers","Use show version to identify device hardware (Layer 1)","Use show interfaces to view Layer 2 MAC addresses and encapsulation","Use show arp to view Layer 3 address mappings"], topology:defaultTopology, commands:["show version","show interfaces","show ip interface brief","show arp","show mac address-table"], hints:["Layer 1 = Physical, Layer 2 = Data Link, Layer 3 = Network","show arp maps IP (L3) to MAC (L2) addresses"], objectiveCommands:[["show version"],["show ip interface brief"],["show version"],["show interfaces"],["show arp"]] },
   { labId:"lab-m1-2", name:"IPv4 Addressing & Subnetting", description:"Calculate network and broadcast addresses, create subnets using VLSM, assign IP addresses to interfaces, and verify with show commands.", difficulty:"beginner", category:"Network Fundamentals", module:"Network Fundamentals", order:6, estimatedTime:"35 min", objectives:["Calculate network address, broadcast address, and valid host range for a /24 subnet","Apply VLSM to divide 192.168.1.0/24 into 4 subnets of different sizes","Assign IP addresses to router interfaces using ip address command","Bring interfaces up with no shutdown","Verify IP assignments with show ip interface brief"], topology:defaultTopology, commands:["show ip interface brief","show interfaces","ip address 192.168.1.1 255.255.255.0","no shutdown","show ip interface brief"], hints:["Network address = IP AND mask","Broadcast = last address in subnet","VLSM: size subnets from largest to smallest"], objectiveCommands:[["show ip interface brief"],["show interfaces"],["ip address"],["no shutdown"],["show ip interface brief"]] },

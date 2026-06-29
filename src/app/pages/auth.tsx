@@ -26,6 +26,7 @@ export default function AuthPage() {
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
+  const [regPassword, setRegPassword] = useState("");
 
   useEffect(() => {
     if (isAuthenticated) navigate("/dashboard");
@@ -66,7 +67,8 @@ export default function AuthPage() {
       await register(name, email, password);
       setShowVerifyBanner(true);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      const res = (err as { response?: { data?: { message?: string; errors?: { field: string; message: string }[] } } })?.response?.data;
+      const msg = res?.errors?.map(e => e.message).join('. ') || res?.message;
       toast.error(msg || "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -203,11 +205,30 @@ export default function AuthPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="reg-password">Password</Label>
-                    <Input id="reg-password" name="password" type="password" placeholder="••••••••" required />
+                    <Input id="reg-password" name="password" type="password" placeholder="••••••••" required
+                      value={regPassword} onChange={(e) => setRegPassword(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirm-password">Confirm Password</Label>
                     <Input id="confirm-password" name="confirmPassword" type="password" placeholder="••••••••" required />
+                  </div>
+                  {/* Password requirements — live validation */}
+                  <div className="space-y-1.5 px-1">
+                    <p className="text-xs font-medium text-muted-foreground">Password requirements:</p>
+                    <div className="grid grid-cols-1 gap-1">
+                      <div className={`flex items-center gap-1.5 text-xs ${regPassword.length >= 8 ? 'text-accent' : 'text-muted-foreground'}`}>
+                        <span>{regPassword.length >= 8 ? '✓' : '○'}</span>
+                        <span>At least 8 characters</span>
+                      </div>
+                      <div className={`flex items-center gap-1.5 text-xs ${/[A-Za-z]/.test(regPassword) ? 'text-accent' : 'text-muted-foreground'}`}>
+                        <span>{/[A-Za-z]/.test(regPassword) ? '✓' : '○'}</span>
+                        <span>At least one letter (a-z)</span>
+                      </div>
+                      <div className={`flex items-center gap-1.5 text-xs ${/\d/.test(regPassword) ? 'text-accent' : 'text-muted-foreground'}`}>
+                        <span>{/\d/.test(regPassword) ? '✓' : '○'}</span>
+                        <span>At least one number (0-9)</span>
+                      </div>
+                    </div>
                   </div>
                   <Button type="submit" className="w-full bg-[#00FF41] hover:bg-[#00DD35] text-[#0F172A] font-semibold" disabled={isLoading}>
                     {isLoading ? "Creating account..." : "Create Account"}
@@ -238,9 +259,9 @@ export default function AuthPage() {
 
         <p className="text-center text-sm text-muted-foreground">
           By continuing, you agree to our{" "}
-          <a href="#" className="text-[#3B82F6] hover:text-[#2563EB]">Terms of Service</a>{" "}
+          <Link to="/" className="text-[#3B82F6] hover:text-[#2563EB]">Terms of Service</Link>{" "}
           and{" "}
-          <a href="#" className="text-[#3B82F6] hover:text-[#2563EB]">Privacy Policy</a>
+          <Link to="/" className="text-[#3B82F6] hover:text-[#2563EB]">Privacy Policy</Link>
         </p>
       </div>
 

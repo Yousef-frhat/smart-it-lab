@@ -195,7 +195,7 @@ export default function MyLabs() {
         {filteredLabs.map((lab) => (
           <Card
             key={lab.id}
-            className="bg-card border-border hover:border-primary transition-colors"
+            className="bg-card border-border hover:border-primary transition-colors card-hover"
           >
             <CardHeader>
               <div className="flex items-start justify-between mb-2">

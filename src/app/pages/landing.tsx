@@ -115,7 +115,7 @@ export default function LandingPage() {
           </p>
           <div className="flex justify-center">
             <Link to="/auth">
-              <Button size="lg" className="bg-[#00FF41] hover:bg-[#00DD35] text-[#0F172A] font-semibold">
+              <Button size="lg" className="bg-[#00FF41] hover:bg-[#00DD35] text-[#0F172A] font-semibold btn-glow">
                 Start Free Trial
               </Button>
             </Link>
@@ -127,7 +127,7 @@ export default function LandingPage() {
       <section className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-6">
           {features.map((feature, i) => (
-            <Card key={i} className="bg-card border-border hover:border-primary transition-colors">
+            <Card key={i} className="bg-card border-border hover:border-primary transition-colors card-hover">
               <CardHeader>
                 <div className="mb-4">{feature.icon}</div>
                 <CardTitle className="text-xl">{feature.title}</CardTitle>
@@ -202,7 +202,8 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Network className="w-5 h-5 text-accent" />
+                <img src="/logo.png" alt="" className="w-6 h-6 hidden dark:block" />
+                <img src="/logo-light.png" alt="" className="w-6 h-6 block dark:hidden" />
                 <span className="font-mono font-semibold">Smart IT Lab</span>
               </div>
               <p className="text-sm text-muted-foreground">
@@ -214,35 +215,35 @@ export default function LandingPage() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link to="/pricing" className="hover:text-accent transition-colors">Pricing</Link></li>
                 <li><Link to="/dashboard" className="hover:text-accent transition-colors">Dashboard</Link></li>
-                <li><a href="#" className="hover:text-accent transition-colors">Labs</a></li>
+                <li><Link to="/dashboard/labs" className="hover:text-accent transition-colors">Labs</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-accent transition-colors">Documentation</a></li>
-                <li><a href="#" className="hover:text-accent transition-colors">API Reference</a></li>
-                <li><a href="#" className="hover:text-accent transition-colors">Tutorials</a></li>
+                <li><Link to="/dashboard/labs" className="hover:text-accent transition-colors">Browse Labs</Link></li>
+                <li><Link to="/dashboard/achievements" className="hover:text-accent transition-colors">Achievements</Link></li>
+                <li><Link to="/dashboard/leaderboard" className="hover:text-accent transition-colors">Leaderboard</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-accent transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-accent transition-colors">Terms of Service</a></li>
+                <li><Link to="/auth" className="hover:text-accent transition-colors">Sign In</Link></li>
+                <li><Link to="/pricing" className="hover:text-accent transition-colors">Plans</Link></li>
               </ul>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">© 2026 Smart IT Lab. All rights reserved.</p>
             <div className="flex gap-4 mt-4 md:mt-0">
-              <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
                 <Github className="w-5 h-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
+              <a href="mailto:contact@smartitlab.com" className="text-muted-foreground hover:text-accent transition-colors">
                 <Mail className="w-5 h-5" />
               </a>
             </div>

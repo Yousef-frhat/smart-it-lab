@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { 
   Trophy, TrendingUp, TrendingDown, Minus, Crown, Medal, 
   Award, Target, Flame, Star, Loader2
@@ -90,6 +90,7 @@ export default function Leaderboard() {
 
             <div className="flex items-center gap-3 flex-1">
               <Avatar className="w-10 h-10 bg-gradient-to-br from-[#3B82F6] to-[#00FF41]">
+                {entry.avatar && <AvatarImage src={entry.avatar} alt={entry.name} />}
                 <AvatarFallback className="bg-transparent text-white font-semibold">
                   {entry.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                 </AvatarFallback>

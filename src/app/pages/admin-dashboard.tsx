@@ -239,7 +239,8 @@ export default function AdminDashboard() {
       <aside className="fixed left-0 top-0 h-screen w-64 bg-background border-r border-border flex flex-col">
         <div className="p-6 border-b border-border">
           <Link to="/" className="flex items-center gap-2">
-            <Network className="w-6 h-6 text-accent" />
+            <img src="/logo.png" alt="Smart IT Lab" className="w-7 h-7 hidden dark:block" />
+            <img src="/logo-light.png" alt="Smart IT Lab" className="w-7 h-7 block dark:hidden" />
             <span className="font-mono text-xl tracking-tight">{t('adminDashboard')}</span>
           </Link>
         </div>

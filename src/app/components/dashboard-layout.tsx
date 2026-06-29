@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import {
   Network, BarChart3, BookOpen, Trophy, Award,
-  Settings, LogOut, Languages, Sun, Moon, Menu, X,
+  Settings, LogOut, Languages, Sun, Moon, Menu, X, ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/app/contexts/auth-context";
 import { useTheme } from "@/app/contexts/theme-context";
@@ -25,7 +25,7 @@ const THEME_META: Record<
 };
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { logout } = useAuth();
+  const { logout, isAdmin } = useAuth();
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const navigate  = useNavigate();
@@ -56,11 +56,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const closeSidebar = () => setSidebarOpen(false);
 
   const navItems = [
-    { path: '/dashboard',              icon: BarChart3, label: t('dashboard')    },
-    { path: '/dashboard/labs',         icon: BookOpen,  label: t('myLabs')       },
-    { path: '/dashboard/achievements', icon: Trophy,    label: t('achievements') },
-    { path: '/dashboard/leaderboard',  icon: Award,     label: t('leaderboard') },
-    { path: '/dashboard/settings',     icon: Settings,  label: t('settings')    },
+    { path: '/dashboard',              icon: BarChart3,    label: t('dashboard')    },
+    { path: '/dashboard/labs',         icon: BookOpen,     label: t('myLabs')       },
+    { path: '/dashboard/achievements', icon: Trophy,       label: t('achievements') },
+    { path: '/dashboard/leaderboard',  icon: Award,        label: t('leaderboard') },
+    { path: '/dashboard/settings',     icon: Settings,     label: t('settings')    },
+    ...(isAdmin ? [{ path: '/admin', icon: ShieldCheck, label: 'Admin Panel' }] : []),
   ];
 
   const { icon: ThemeIcon, nextLabel, nextTheme } = THEME_META[theme];
@@ -77,7 +78,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* ── Mobile top bar (hamburger) — hidden on lg ───────────── */}
       <header className="lg:hidden fixed top-0 inset-x-0 z-30 h-14 flex items-center justify-between px-4 bg-sidebar border-b border-sidebar-border">
         <Link to="/" className="flex items-center gap-2" onClick={closeSidebar}>
-          <Network className="w-5 h-5 text-accent shrink-0" />
+          <img src="/logo.png" alt="Smart IT Lab" className="w-6 h-6 hidden dark:block shrink-0" />
+          <img src="/logo-light.png" alt="Smart IT Lab" className="w-6 h-6 block dark:hidden shrink-0" />
           <span className="font-mono text-lg tracking-tight">Smart IT Lab</span>
         </Link>
         <Button
@@ -103,14 +105,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* ── Sidebar ───────────────────────────────────────────── */}
       <aside
         className={`fixed top-0 h-screen w-64 max-w-[80vw] bg-sidebar text-sidebar-foreground
-          flex flex-col z-40 transition-transform duration-300 ease-in-out
+          flex flex-col z-40 transition-transform duration-300 ease-in-out shadow-xl
           ${sidebarSideClass}
           ${sidebarOpen ? 'translate-x-0' : `${hiddenTransform} lg:translate-x-0`}`}
       >
         {/* Logo + close (close only shows on mobile) */}
         <div className="p-6 border-b border-sidebar-border flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2" onClick={closeSidebar}>
-            <Network className="w-6 h-6 text-accent shrink-0" />
+            <img src="/logo.png" alt="Smart IT Lab" className="w-7 h-7 hidden dark:block shrink-0" />
+            <img src="/logo-light.png" alt="Smart IT Lab" className="w-7 h-7 block dark:hidden shrink-0" />
             <span className="font-mono text-xl tracking-tight text-sidebar-foreground">
               Smart IT Lab
             </span>
@@ -189,7 +192,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
        * On lg+: leave room for the fixed 16rem sidebar (margin start).
        */}
       <main
-        className={`bg-background min-h-screen p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8
+        className={`bg-background min-h-screen p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 transition-[margin] duration-300
           ${isRTL ? 'lg:mr-64' : 'lg:ml-64'}`}
       >
         {children}

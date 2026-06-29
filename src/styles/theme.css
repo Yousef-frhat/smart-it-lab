@@ -132,6 +132,42 @@
     font-family: var(--font-sans);
   }
 
+  /* Smooth theme transition */
+  body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Smooth card/component transitions when theme changes */
+  [class*="bg-card"],
+  [class*="bg-background"],
+  [class*="bg-muted"],
+  [class*="bg-sidebar"] {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+  }
+
+  /* Improve scrollbar aesthetics */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: 999px;
+    opacity: 0.5;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--foreground);
+  }
+
+  /* Selection color */
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+
   /**
   * Default typography styles for HTML elements (h1-h4, p, label, button, input).
   * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
@@ -303,4 +339,25 @@ select:-webkit-autofill {
   /* Delay the autofill background animation effectively forever so the
      repainted background sticks. */
   transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Cards hover lift effect */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.15), 0 4px 10px -5px rgba(0, 0, 0, 0.1);
+}
+html.light .card-hover:hover {
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -5px rgba(0, 0, 0, 0.05);
+}
+
+/* Subtle pulse on primary action buttons */
+@keyframes subtle-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+  50% { box-shadow: 0 0 12px 2px rgba(59, 130, 246, 0.2); }
+}
+.btn-glow {
+  animation: subtle-glow 3s ease-in-out infinite;
 }
